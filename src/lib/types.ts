@@ -3,10 +3,18 @@ export type Sentiment = "calm" | "frustrated" | "angry";
 export type CallOutcome = "resolved" | "escalated" | "transferred" | "abandoned";
 export type RubricCategory = "clarity" | "accuracy" | "empathy" | "efficiency";
 
+export interface SentimentTimelineEntry {
+  turnNumber: number; sentiment: Sentiment; confidence: number;
+}
+
 export interface SupportCall {
   id: string; callerName: string; callerPhone: string; intent: IntentCategory;
   sentiment: Sentiment; duration: string; outcome: CallOutcome;
   escalationTriggered: boolean; csatPredicted: number;
+  /** Per-turn sentiment snapshots — trajectory is a stronger churn signal than any single point */
+  sentimentTimeline: SentimentTimelineEntry[];
+  /** 0-100 score derived from sentiment trajectory. Rising anger with no de-escalation → high risk */
+  churnRisk: number;
 }
 
 export interface TranscriptTurn {

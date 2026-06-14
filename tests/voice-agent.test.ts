@@ -38,6 +38,37 @@ describe("quality review", () => {
   });
 });
 
+describe("sentiment trajectory and churn risk", () => {
+  it("has one timeline entry per transcript turn", () => {
+    expect(demoActiveCall.sentimentTimeline).toHaveLength(demoTranscript.length);
+  });
+
+  it("shows trajectory deterioration: calm → frustrated → angry at peak frustration turn", () => {
+    const firstSentiment = demoActiveCall.sentimentTimeline[0].sentiment;
+    const peakEntry = demoActiveCall.sentimentTimeline.find(e => e.sentiment === "angry");
+    expect(firstSentiment).toBe("calm");
+    expect(peakEntry).toBeDefined();
+    expect(peakEntry!.turnNumber).toBe(6); // caller says "unacceptable"
+  });
+
+  it("shows trajectory recovery: final turn is calm after de-escalation", () => {
+    const finalEntry = demoActiveCall.sentimentTimeline[demoActiveCall.sentimentTimeline.length - 1];
+    expect(finalEntry.sentiment).toBe("calm");
+  });
+
+  it("churn risk exceeds 50 when caller peaks at angry without early de-escalation", () => {
+    expect(demoActiveCall.churnRisk).toBeGreaterThan(50);
+    expect(demoActiveCall.churnRisk).toBeLessThan(100);
+  });
+
+  it("sentiment transition from angry to frustrated at turn 7 shows de-escalation window", () => {
+    const turn6 = demoActiveCall.sentimentTimeline.find(e => e.turnNumber === 6);
+    const turn7 = demoActiveCall.sentimentTimeline.find(e => e.turnNumber === 7);
+    expect(turn6!.sentiment).toBe("angry");
+    expect(turn7!.sentiment).toBe("frustrated");
+  });
+});
+
 describe("silence gaps (latency)", () => {
   it("all turns have silenceBeforeSeconds defined", () => {
     expect(demoTranscript.every(t => t.silenceBeforeSeconds !== undefined)).toBe(true);

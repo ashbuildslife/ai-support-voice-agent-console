@@ -1,9 +1,23 @@
-import type { CallQualityReview, EscalationEvent, FrustrationAlert, GroundedAnswer, KBArticle, RubricScore, SupervisorMetrics, SupportCall, TranscriptTurn, VoiceAgentSnapshot } from "./types";
+import type { CallQualityReview, EscalationEvent, FrustrationAlert, GroundedAnswer, KBArticle, RubricScore, SentimentTimelineEntry, SupervisorMetrics, SupportCall, TranscriptTurn, VoiceAgentSnapshot } from "./types";
+
+export const demoSentimentTimeline: SentimentTimelineEntry[] = [
+  { turnNumber: 1, sentiment: "calm", confidence: 0.97 },
+  { turnNumber: 2, sentiment: "frustrated", confidence: 0.88 },
+  { turnNumber: 3, sentiment: "frustrated", confidence: 0.85 },
+  { turnNumber: 4, sentiment: "frustrated", confidence: 0.91 },
+  { turnNumber: 5, sentiment: "frustrated", confidence: 0.82 },
+  { turnNumber: 6, sentiment: "angry", confidence: 0.94 },
+  { turnNumber: 7, sentiment: "frustrated", confidence: 0.86 },
+  { turnNumber: 8, sentiment: "frustrated", confidence: 0.89 },
+  { turnNumber: 9, sentiment: "calm", confidence: 0.92 },
+];
 
 export const demoActiveCall: SupportCall = {
   id: "call_2847", callerName: "James Morrison", callerPhone: "+1 (415) 555-0182",
   intent: "billing", sentiment: "frustrated", duration: "4:32", outcome: "escalated",
-  escalationTriggered: true, csatPredicted: 34
+  escalationTriggered: true, csatPredicted: 34,
+  sentimentTimeline: demoSentimentTimeline,
+  churnRisk: 72
 };
 
 export const demoTranscript: TranscriptTurn[] = [
