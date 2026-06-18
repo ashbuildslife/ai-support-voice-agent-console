@@ -1,5 +1,5 @@
 import { demoActiveCall, demoEscalationEvents, demoFrustrationAlerts, demoGroundedAnswers, demoKBArticles, demoMetrics, demoQualityReview, demoTranscript } from "@/lib/demo-data";
-import type { IntentCategory, Sentiment } from "@/lib/types";
+import type { EscalationAction, IntentCategory, Sentiment } from "@/lib/types";
 
 function Badge({ children, tone = "slate" }: { children: React.ReactNode; tone?: string }) {
   const t: Record<string, string> = { slate: "border-slate-200 bg-white text-slate-700", green: "border-emerald-200 bg-emerald-50 text-emerald-700", red: "border-red-200 bg-red-50 text-red-700", amber: "border-amber-200 bg-amber-50 text-amber-800", purple: "border-indigo-200 bg-indigo-50 text-indigo-700" };
@@ -19,6 +19,14 @@ function IntentBadge({ intent }: { intent: IntentCategory }) {
   const m: Record<IntentCategory, string> = { billing: "purple", technical: "indigo", account: "slate", cancellation: "red", general: "slate" };
   return <Badge tone={m[intent]}>{intent}</Badge>;
 }
+
+const escalationActionLabels: Record<EscalationAction, string> = {
+  continue: "Continue",
+  clarify: "Clarify",
+  human_handoff: "Human handoff",
+  qa_review: "QA review",
+  immediate_alert: "Immediate alert"
+};
 
 export default function Home() {
   return (
@@ -115,6 +123,29 @@ export default function Home() {
               <div key={e.callId} className="mt-4 rounded-2xl border border-amber-200 bg-amber-50/50 p-4">
                 <p className="text-sm font-semibold text-slate-950">Transferred to: {e.transferredTo}</p>
                 <p className="mt-2 text-xs leading-5 text-slate-600">{e.reason}</p>
+                <div className="mt-3 grid gap-2 text-xs sm:grid-cols-3">
+                  <div className="rounded-xl bg-white/80 p-3">
+                    <p className="font-semibold text-slate-500">Risk score</p>
+                    <p className="text-lg font-black text-amber-700">{e.riskScore}/10</p>
+                  </div>
+                  <div className="rounded-xl bg-white/80 p-3">
+                    <p className="font-semibold text-slate-500">Rubric action</p>
+                    <p className="font-black text-slate-950">{escalationActionLabels[e.recommendedAction]}</p>
+                  </div>
+                  <div className="rounded-xl bg-white/80 p-3">
+                    <p className="font-semibold text-slate-500">Policy sensitivity</p>
+                    <p className="font-black text-slate-950">{e.policySensitivity}</p>
+                  </div>
+                </div>
+                <div className="mt-3 rounded-xl border border-amber-200 bg-white/70 p-3 text-xs leading-5 text-slate-700">
+                  <p className="font-bold text-slate-950">Warm handoff summary</p>
+                  <p className="mt-1">{e.handoffSummary.customerIssue}</p>
+                  <ul className="mt-2 list-disc pl-4">
+                    {e.handoffSummary.attemptedResolution.map(item => <li key={item}>{item}</li>)}
+                  </ul>
+                  <p className="mt-2"><strong>Next action:</strong> {e.handoffSummary.recommendedNextAction}</p>
+                  <p className="mt-2 text-amber-800"><strong>Risk flags:</strong> {e.riskFlags.join(", ")}</p>
+                </div>
                 <p className="mt-2 text-xs text-slate-400">At {e.atTimestamp}</p>
               </div>
             ))}

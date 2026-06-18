@@ -49,7 +49,25 @@ export const demoFrustrationAlerts: FrustrationAlert[] = [
 ];
 
 export const demoEscalationEvents: EscalationEvent[] = [
-  { callId: "call_2847", reason: "Frustration keywords detected (turn 6) + charge exceeds $200 threshold for expedited reversal. Flagged for same-day resolution per KB-203.", transferredTo: "Maria — Billing Specialist Team", atTimestamp: "00:02:45" }
+  {
+    callId: "call_2847",
+    reason: "Frustration keywords detected (turn 6) + charge exceeds $200 threshold for expedited reversal. Flagged for same-day resolution per KB-203.",
+    transferredTo: "Maria — Billing Specialist Team",
+    atTimestamp: "00:02:45",
+    riskScore: 6,
+    recommendedAction: "human_handoff",
+    policySensitivity: "Payment dispute with account-specific refund exception",
+    riskFlags: ["payment dispute", "repeat contact", "anger spike", "expedited refund exception"],
+    handoffSummary: {
+      customerIssue: "James was charged $247.50 two weeks after cancelling and has already contacted support once.",
+      attemptedResolution: [
+        "Verified cancellation and post-cancellation charge against KB-142",
+        "Identified KB-203 same-day reversal exception for charges over $200"
+      ],
+      missingInformation: ["Billing specialist must confirm refund processor status before promising exact deposit timing"],
+      recommendedNextAction: "Transfer to billing specialist with full context and process same-day reversal if payment processor status is clear."
+    }
+  }
 ];
 
 export const demoMetrics: SupervisorMetrics = {

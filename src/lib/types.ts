@@ -1,6 +1,7 @@
 export type IntentCategory = "billing" | "technical" | "account" | "cancellation" | "general";
 export type Sentiment = "calm" | "frustrated" | "angry";
 export type CallOutcome = "resolved" | "escalated" | "transferred" | "abandoned";
+export type EscalationAction = "continue" | "clarify" | "human_handoff" | "qa_review" | "immediate_alert";
 export type RubricCategory = "clarity" | "accuracy" | "empathy" | "efficiency";
 
 export interface SentimentTimelineEntry {
@@ -36,8 +37,17 @@ export interface FrustrationAlert {
   callId: string; keywords: string[]; turnNumber: number; escalated: boolean;
 }
 
+export interface EscalationHandoffSummary {
+  customerIssue: string;
+  attemptedResolution: string[];
+  missingInformation: string[];
+  recommendedNextAction: string;
+}
+
 export interface EscalationEvent {
   callId: string; reason: string; transferredTo: string; atTimestamp: string;
+  riskScore: number; recommendedAction: EscalationAction; policySensitivity: string;
+  riskFlags: string[]; handoffSummary: EscalationHandoffSummary;
 }
 
 export interface SupervisorMetrics {

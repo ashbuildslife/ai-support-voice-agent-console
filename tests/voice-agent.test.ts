@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { demoActiveCall, demoTranscript, demoFrustrationAlerts, demoMetrics, demoQualityReview } from "@/lib/demo-data";
+import { demoActiveCall, demoTranscript, demoFrustrationAlerts, demoMetrics, demoQualityReview, demoEscalationEvents } from "@/lib/demo-data";
 
 describe("transcript", () => {
   it("has 9 turns", () => expect(demoTranscript).toHaveLength(9));
@@ -16,6 +16,31 @@ describe("frustration detection", () => {
   });
   it("escalation was triggered", () => {
     expect(demoActiveCall.escalationTriggered).toBe(true);
+  });
+});
+
+describe("escalation rubric handoff", () => {
+  const event = demoEscalationEvents[0];
+
+  it("uses human handoff when risk reaches the escalation threshold", () => {
+    expect(event.riskScore).toBeGreaterThanOrEqual(5);
+    expect(event.recommendedAction).toBe("human_handoff");
+  });
+
+  it("passes enough context for the specialist to avoid restarting the call", () => {
+    expect(event.handoffSummary.customerIssue).toContain("$247.50");
+    expect(event.handoffSummary.attemptedResolution).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("KB-142"),
+        expect.stringContaining("KB-203")
+      ])
+    );
+    expect(event.handoffSummary.recommendedNextAction.toLowerCase()).toContain("same-day reversal");
+  });
+
+  it("flags payment-sensitive risk for supervisor review", () => {
+    expect(event.policySensitivity.toLowerCase()).toContain("payment");
+    expect(event.riskFlags).toEqual(expect.arrayContaining(["payment dispute", "repeat contact"]));
   });
 });
 
