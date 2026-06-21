@@ -17,7 +17,9 @@ export const demoActiveCall: SupportCall = {
   intent: "billing", sentiment: "frustrated", duration: "4:32", outcome: "escalated",
   escalationTriggered: true, csatPredicted: 34,
   sentimentTimeline: demoSentimentTimeline,
-  churnRisk: 72
+  churnRisk: 72,
+  resolvedOnFirstContact: false,
+  previousCallId: "call_2801"
 };
 
 export const demoTranscript: TranscriptTurn[] = [
@@ -73,7 +75,9 @@ export const demoEscalationEvents: EscalationEvent[] = [
 export const demoMetrics: SupervisorMetrics = {
   totalCalls: 847, resolvedCount: 612, escalatedCount: 178,
   avgDuration: "6:12", avgCsat: 72, escalationRate: 21.0,
-  callsByIntent: { billing: 312, technical: 289, account: 156, cancellation: 54, general: 36 }
+  callsByIntent: { billing: 312, technical: 289, account: 156, cancellation: 54, general: 36 },
+  repeatContactRate: 7.4,
+  repeatContactCount: 63
 };
 
 const rubricScores: RubricScore[] = [

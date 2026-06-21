@@ -109,3 +109,29 @@ describe("silence gaps (latency)", () => {
     expect(midCall.every(t => (t.silenceBeforeSeconds ?? 0) > 2.5)).toBe(true);
   });
 });
+
+describe("first-contact resolution (containment ≠ resolution)", () => {
+  it("marks the active call as not resolved on first contact because it escalated", () => {
+    expect(demoActiveCall.resolvedOnFirstContact).toBe(false);
+  });
+
+  it("links the active call to a prior contact ID", () => {
+    expect(demoActiveCall.previousCallId).toBeTruthy();
+    expect(demoActiveCall.previousCallId).toMatch(/^call_/);
+  });
+
+  it("repeat contact rate is between 1 and 15 percent of total calls", () => {
+    const rate = demoMetrics.repeatContactRate;
+    expect(rate).toBeGreaterThan(0);
+    expect(rate).toBeLessThan(15);
+    const expectedCount = Math.round(demoMetrics.totalCalls * (rate / 100));
+    expect(demoMetrics.repeatContactCount).toBe(expectedCount);
+  });
+
+  it("repeat contact count is consistent with rate and total calls", () => {
+    expect(typeof demoMetrics.repeatContactRate).toBe("number");
+    expect(typeof demoMetrics.repeatContactCount).toBe("number");
+    expect(demoMetrics.repeatContactCount).toBeGreaterThan(0);
+    expect(demoMetrics.repeatContactCount).toBeLessThan(demoMetrics.totalCalls);
+  });
+});

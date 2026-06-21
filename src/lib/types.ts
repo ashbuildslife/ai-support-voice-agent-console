@@ -16,6 +16,12 @@ export interface SupportCall {
   sentimentTimeline: SentimentTimelineEntry[];
   /** 0-100 score derived from sentiment trajectory. Rising anger with no de-escalation → high risk */
   churnRisk: number;
+  /** False when customer called back within 72h of a prior contact for the same issue.
+   *  The gap between "contained" and "resolved" is the #1 silent failure mode in voice AI —
+   *  repeat contacts mean the AI deflected the call but didn't solve the problem. */
+  resolvedOnFirstContact: boolean;
+  /** The prior call ID when this is a repeat contact (null for first contacts) */
+  previousCallId: string | null;
 }
 
 export interface TranscriptTurn {
@@ -54,6 +60,11 @@ export interface SupervisorMetrics {
   totalCalls: number; resolvedCount: number; escalatedCount: number;
   avgDuration: string; avgCsat: number; escalationRate: number;
   callsByIntent: Record<string, number>;
+  /** Percentage of calls that were repeat contacts (customer called back within 72h).
+   *  Below 5% is healthy; above 12% signals the AI is deflecting but not resolving. */
+  repeatContactRate: number;
+  /** Absolute count of repeat contacts in the measurement window */
+  repeatContactCount: number;
 }
 
 export interface RubricScore {
