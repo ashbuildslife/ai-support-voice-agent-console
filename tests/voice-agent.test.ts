@@ -60,6 +60,28 @@ describe("escalation rubric handoff", () => {
     expect(reviewItem?.evidence.toLowerCase()).toContain("processor status");
     expect(event.handoffSummary.routingRationale.toLowerCase()).toContain("repeat contact");
   });
+
+  it("gives the specialist an opening line that proves the caller should not repeat themselves", () => {
+    const brief = event.handoffSummary.specialistOpeningBrief;
+
+    expect(brief.openingLine).toContain("James");
+    expect(brief.openingLine).toContain("call_2801");
+    expect(brief.openingLine).toContain("$247.50");
+    expect(brief.repeatPreventionEvidence).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("Customer identity"),
+        expect.stringContaining("KB-203"),
+        expect.stringContaining("REF-2847-JM")
+      ])
+    );
+  });
+
+  it("keeps unresolved processor and duplicate-refund checks visible to the specialist", () => {
+    const prompts = event.handoffSummary.specialistOpeningBrief.unresolvedReviewPrompts.join(" ").toLowerCase();
+
+    expect(prompts).toContain("processor status");
+    expect(prompts).toContain("duplicate reversal risk");
+  });
 });
 
 describe("metrics", () => {

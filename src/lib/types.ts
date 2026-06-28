@@ -48,6 +48,12 @@ export interface HandoffReadinessItem {
   label: string; status: HandoffReadinessStatus; evidence: string;
 }
 
+export interface SpecialistOpeningBrief {
+  openingLine: string;
+  repeatPreventionEvidence: string[];
+  unresolvedReviewPrompts: string[];
+}
+
 export interface EscalationHandoffSummary {
   customerIssue: string;
   attemptedResolution: string[];
@@ -57,6 +63,8 @@ export interface EscalationHandoffSummary {
   routingRationale: string;
   /** Context packet used to prevent the customer repeating details after transfer */
   readinessChecklist: HandoffReadinessItem[];
+  /** Agent-assist pre-brief the specialist sees before greeting the caller */
+  specialistOpeningBrief: SpecialistOpeningBrief;
 }
 
 export interface EscalationEvent {

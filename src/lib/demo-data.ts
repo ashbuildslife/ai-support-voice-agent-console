@@ -75,7 +75,19 @@ export const demoEscalationEvents: EscalationEvent[] = [
         { label: "Intent and sentiment", status: "ready", evidence: "Billing intent at 0.88 confidence with frustration peaking at turn 6 after 'unacceptable'." },
         { label: "Prior actions", status: "ready", evidence: "AI verified KB-142, found KB-203 exception eligibility, and generated REF-2847-JM." },
         { label: "Open compliance check", status: "needs_review", evidence: "Specialist must confirm refund processor status before promising exact deposit timing." }
-      ]
+      ],
+      specialistOpeningBrief: {
+        openingLine: "Hi James, this is Maria in billing. I can see you are following up on call_2801 about the $247.50 post-cancellation charge, and Ava has already confirmed the KB-203 same-day reversal exception.",
+        repeatPreventionEvidence: [
+          "Customer identity, email, phone, and prior call_2801 are already captured in the handoff packet.",
+          "Refund amount, cancellation date, KB-142 policy, and KB-203 exception are already summarized for the specialist.",
+          "Reference REF-2847-JM is ready so the specialist can continue instead of restarting verification."
+        ],
+        unresolvedReviewPrompts: [
+          "Confirm processor status before stating an exact deposit time.",
+          "Verify whether the prior promised refund from call_2801 created any duplicate reversal risk."
+        ]
+      }
     }
   }
 ];

@@ -145,6 +145,17 @@ export default function Home() {
                   </ul>
                   <p className="mt-2"><strong>Next action:</strong> {e.handoffSummary.recommendedNextAction}</p>
                   <p className="mt-2"><strong>Routing rationale:</strong> {e.handoffSummary.routingRationale}</p>
+                  <div className="mt-3 rounded-lg border border-emerald-100 bg-emerald-50 p-3">
+                    <p className="font-bold text-slate-950">Specialist opening brief</p>
+                    <p className="mt-1 italic text-slate-700">“{e.handoffSummary.specialistOpeningBrief.openingLine}”</p>
+                    <ul className="mt-2 list-disc pl-4">
+                      {e.handoffSummary.specialistOpeningBrief.repeatPreventionEvidence.map(item => <li key={item}>{item}</li>)}
+                    </ul>
+                    <p className="mt-2 font-semibold text-amber-800">Still needs review:</p>
+                    <ul className="mt-1 list-disc pl-4 text-amber-900">
+                      {e.handoffSummary.specialistOpeningBrief.unresolvedReviewPrompts.map(item => <li key={item}>{item}</li>)}
+                    </ul>
+                  </div>
                   <div className="mt-3 rounded-lg bg-amber-50 p-3">
                     <p className="font-bold text-slate-950">Handoff readiness packet</p>
                     <ul className="mt-2 space-y-1">
