@@ -3,6 +3,7 @@ export type Sentiment = "calm" | "frustrated" | "angry";
 export type CallOutcome = "resolved" | "escalated" | "transferred" | "abandoned";
 export type EscalationAction = "continue" | "clarify" | "human_handoff" | "qa_review" | "immediate_alert";
 export type HandoffReadinessStatus = "ready" | "needs_review";
+export type HandoffDeliveryStatus = "queued" | "sent" | "acknowledged" | "needs_retry";
 export type RubricCategory = "clarity" | "accuracy" | "empathy" | "efficiency";
 
 export interface SentimentTimelineEntry {
@@ -48,6 +49,14 @@ export interface HandoffReadinessItem {
   label: string; status: HandoffReadinessStatus; evidence: string;
 }
 
+export interface HandoffDeliveryAudit {
+  destination: string;
+  sentBeforeTransferSeconds: number;
+  status: HandoffDeliveryStatus;
+  acknowledgementRequired: boolean;
+  fallbackIfNotAcknowledged: string;
+}
+
 export interface NoRepeatGuardrail {
   capturedDetail: string;
   reuseInstruction: string;
@@ -70,6 +79,8 @@ export interface EscalationHandoffSummary {
   routingRationale: string;
   /** Context packet used to prevent the customer repeating details after transfer */
   readinessChecklist: HandoffReadinessItem[];
+  /** Delivery audit proving the packet reached the specialist desktop before live connection */
+  deliveryAudit: HandoffDeliveryAudit;
   /** Agent-assist pre-brief the specialist sees before greeting the caller */
   specialistOpeningBrief: SpecialistOpeningBrief;
 }

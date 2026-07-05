@@ -76,6 +76,13 @@ export const demoEscalationEvents: EscalationEvent[] = [
         { label: "Prior actions", status: "ready", evidence: "AI verified KB-142, found KB-203 exception eligibility, and generated REF-2847-JM." },
         { label: "Open compliance check", status: "needs_review", evidence: "Specialist must confirm refund processor status before promising exact deposit timing." }
       ],
+      deliveryAudit: {
+        destination: "Maria — Billing Specialist Team agent desktop",
+        sentBeforeTransferSeconds: 18,
+        status: "acknowledged",
+        acknowledgementRequired: true,
+        fallbackIfNotAcknowledged: "Hold the live transfer and offer James a context-preserving callback so the specialist receives the same issue packet before reconnecting."
+      },
       specialistOpeningBrief: {
         openingLine: "Hi James, this is Maria in billing. I can see you are following up on call_2801 about the $247.50 post-cancellation charge, and Ava has already confirmed the KB-203 same-day reversal exception.",
         repeatPreventionEvidence: [

@@ -61,6 +61,16 @@ describe("escalation rubric handoff", () => {
     expect(event.handoffSummary.routingRationale.toLowerCase()).toContain("repeat contact");
   });
 
+  it("audits that the handoff packet reached the specialist before transfer", () => {
+    const delivery = event.handoffSummary.deliveryAudit;
+
+    expect(delivery.destination.toLowerCase()).toContain("agent desktop");
+    expect(delivery.sentBeforeTransferSeconds).toBeGreaterThan(0);
+    expect(delivery.status).toBe("acknowledged");
+    expect(delivery.acknowledgementRequired).toBe(true);
+    expect(delivery.fallbackIfNotAcknowledged.toLowerCase()).toContain("context-preserving callback");
+  });
+
   it("gives the specialist an opening line that proves the caller should not repeat themselves", () => {
     const brief = event.handoffSummary.specialistOpeningBrief;
 

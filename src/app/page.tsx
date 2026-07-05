@@ -177,6 +177,12 @@ export default function Home() {
                       ))}
                     </ul>
                   </div>
+                  <div className="mt-3 rounded-lg border border-sky-100 bg-sky-50 p-3 text-xs leading-5 text-sky-950">
+                    <p className="font-bold text-slate-950">Context delivery audit</p>
+                    <p className="mt-1"><strong>Destination:</strong> {e.handoffSummary.deliveryAudit.destination}</p>
+                    <p><strong>Pre-connect delivery:</strong> Sent {e.handoffSummary.deliveryAudit.sentBeforeTransferSeconds}s before transfer · {e.handoffSummary.deliveryAudit.status}</p>
+                    <p><strong>Fallback:</strong> {e.handoffSummary.deliveryAudit.fallbackIfNotAcknowledged}</p>
+                  </div>
                   <p className="mt-2 text-amber-800"><strong>Risk flags:</strong> {e.riskFlags.join(", ")}</p>
                 </div>
                 <p className="mt-2 text-xs text-slate-400">At {e.atTimestamp}</p>
