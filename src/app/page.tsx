@@ -183,6 +183,16 @@ export default function Home() {
                     <p><strong>Pre-connect delivery:</strong> Sent {e.handoffSummary.deliveryAudit.sentBeforeTransferSeconds}s before transfer · {e.handoffSummary.deliveryAudit.status}</p>
                     <p><strong>Fallback:</strong> {e.handoffSummary.deliveryAudit.fallbackIfNotAcknowledged}</p>
                   </div>
+                  <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 p-3 text-xs leading-5 text-indigo-950">
+                    <p className="font-bold text-slate-950">Caller transfer receipt</p>
+                    <p className="mt-1 italic text-slate-700">“{e.handoffSummary.customerTransferNotice.spokenDisclosure}”</p>
+                    <p className="mt-2"><strong>Caller acknowledged:</strong> {e.handoffSummary.customerTransferNotice.callerAcknowledged ? "Yes" : "Needs confirmation"}</p>
+                    <p><strong>Context shared:</strong></p>
+                    <ul className="mt-1 list-disc pl-4">
+                      {e.handoffSummary.customerTransferNotice.contextShared.map(item => <li key={item}>{item}</li>)}
+                    </ul>
+                    <p className="mt-2"><strong>Repeat expectation:</strong> {e.handoffSummary.customerTransferNotice.repeatExpectation}</p>
+                  </div>
                   <p className="mt-2 text-amber-800"><strong>Risk flags:</strong> {e.riskFlags.join(", ")}</p>
                 </div>
                 <p className="mt-2 text-xs text-slate-400">At {e.atTimestamp}</p>

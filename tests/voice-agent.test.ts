@@ -71,6 +71,18 @@ describe("escalation rubric handoff", () => {
     expect(delivery.fallbackIfNotAcknowledged.toLowerCase()).toContain("context-preserving callback");
   });
 
+  it("records the caller-facing transfer receipt before the human handoff", () => {
+    const notice = event.handoffSummary.customerTransferNotice;
+
+    expect(notice.spokenDisclosure).toContain("James");
+    expect(notice.spokenDisclosure).toContain("REF-2847-JM");
+    expect(notice.contextShared).toEqual(
+      expect.arrayContaining(["verified email", "prior call_2801", "KB-203 same-day reversal exception"])
+    );
+    expect(notice.callerAcknowledged).toBe(true);
+    expect(notice.repeatExpectation.toLowerCase()).toContain("ask only");
+  });
+
   it("gives the specialist an opening line that proves the caller should not repeat themselves", () => {
     const brief = event.handoffSummary.specialistOpeningBrief;
 

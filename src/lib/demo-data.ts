@@ -83,6 +83,12 @@ export const demoEscalationEvents: EscalationEvent[] = [
         acknowledgementRequired: true,
         fallbackIfNotAcknowledged: "Hold the live transfer and offer James a context-preserving callback so the specialist receives the same issue packet before reconnecting."
       },
+      customerTransferNotice: {
+        spokenDisclosure: "James, I am sending Maria your verified email, prior call_2801, refund amount, KB-203 exception, and REF-2847-JM so you should not need to repeat them.",
+        contextShared: ["verified email", "prior call_2801", "$247.50 charge", "KB-203 same-day reversal exception", "REF-2847-JM reference"],
+        callerAcknowledged: true,
+        repeatExpectation: "Maria must open from the transferred context and ask only the unresolved processor-status or duplicate-reversal review questions."
+      },
       specialistOpeningBrief: {
         openingLine: "Hi James, this is Maria in billing. I can see you are following up on call_2801 about the $247.50 post-cancellation charge, and Ava has already confirmed the KB-203 same-day reversal exception.",
         repeatPreventionEvidence: [

@@ -57,6 +57,13 @@ export interface HandoffDeliveryAudit {
   fallbackIfNotAcknowledged: string;
 }
 
+export interface CustomerTransferNotice {
+  spokenDisclosure: string;
+  contextShared: string[];
+  callerAcknowledged: boolean;
+  repeatExpectation: string;
+}
+
 export interface NoRepeatGuardrail {
   capturedDetail: string;
   reuseInstruction: string;
@@ -81,6 +88,8 @@ export interface EscalationHandoffSummary {
   readinessChecklist: HandoffReadinessItem[];
   /** Delivery audit proving the packet reached the specialist desktop before live connection */
   deliveryAudit: HandoffDeliveryAudit;
+  /** Caller-facing receipt of what context will move with the transfer */
+  customerTransferNotice: CustomerTransferNotice;
   /** Agent-assist pre-brief the specialist sees before greeting the caller */
   specialistOpeningBrief: SpecialistOpeningBrief;
 }
