@@ -184,9 +184,20 @@ describe("silence gaps (latency)", () => {
     const t7 = demoTranscript.find(t => t.id === "t7");
     expect(t7?.silenceBeforeSeconds).toBe(peak);
   });
-  it("silence spikes correlate with frustration — turns 5-7 all exceed 2.5s", () => {
-    const midCall = demoTranscript.filter(t => ["t5", "t6", "t7"].includes(t.id));
-    expect(midCall.every(t => (t.silenceBeforeSeconds ?? 0) > 2.5)).toBe(true);
+  it("distinguishes dead air from a caller barge-in during the frustration peak", () => {
+    const deadAirTurns = demoTranscript.filter(t => ["t5", "t7"].includes(t.id));
+    const bargeInTurn = demoTranscript.find(t => t.id === "t6");
+
+    expect(deadAirTurns.every(t => (t.silenceBeforeSeconds ?? 0) > 2.5)).toBe(true);
+    expect(bargeInTurn?.silenceBeforeSeconds).toBeLessThan(0.5);
+    expect(bargeInTurn?.turnTakingSignal?.event).toBe("caller_barge_in");
+  });
+
+  it("records a fast agent yield without losing the caller's utterance", () => {
+    const signal = demoTranscript.find(t => t.id === "t6")?.turnTakingSignal;
+
+    expect(signal?.agentYieldMs).toBeLessThanOrEqual(250);
+    expect(signal?.callerUtterancePreserved).toBe(true);
   });
 });
 

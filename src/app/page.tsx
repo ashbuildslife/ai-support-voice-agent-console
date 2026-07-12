@@ -87,6 +87,15 @@ export default function Home() {
            ⏱ +{turn.silenceBeforeSeconds}s
          </span>
        )}
+       {turn.turnTakingSignal && (
+         <span
+           className="rounded-md bg-sky-100 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700"
+           aria-label={`Caller barge-in handled; agent yielded in ${turn.turnTakingSignal.agentYieldMs} milliseconds`}
+           title="Caller interruption was preserved without talking over them"
+         >
+           ↪ Barge-in · yielded {turn.turnTakingSignal.agentYieldMs}ms
+         </span>
+       )}
      </div>
    </div>
                 <p className="text-sm leading-6 text-slate-700">{turn.text}</p>

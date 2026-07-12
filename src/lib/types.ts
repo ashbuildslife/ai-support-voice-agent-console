@@ -5,9 +5,18 @@ export type EscalationAction = "continue" | "clarify" | "human_handoff" | "qa_re
 export type HandoffReadinessStatus = "ready" | "needs_review";
 export type HandoffDeliveryStatus = "queued" | "sent" | "acknowledged" | "needs_retry";
 export type RubricCategory = "clarity" | "accuracy" | "empathy" | "efficiency";
+export type TurnTakingEvent = "caller_barge_in" | "agent_interruption";
 
 export interface SentimentTimelineEntry {
   turnNumber: number; sentiment: Sentiment; confidence: number;
+}
+
+export interface TurnTakingSignal {
+  event: TurnTakingEvent;
+  /** Milliseconds from caller speech detection until the agent stopped talking */
+  agentYieldMs: number;
+  /** Confirms the caller's complete utterance survived the interruption */
+  callerUtterancePreserved: boolean;
 }
 
 export interface SupportCall {
@@ -31,6 +40,8 @@ export interface TranscriptTurn {
   timestamp: string; intent?: IntentCategory; confidence?: number;
   /** Seconds of silence before this turn began — the #1 latency pain point in voice AI */
   silenceBeforeSeconds?: number;
+  /** Turn-taking telemetry for interruptions that should not be mistaken for dead air */
+  turnTakingSignal?: TurnTakingSignal;
 }
 
 export interface KBArticle {
