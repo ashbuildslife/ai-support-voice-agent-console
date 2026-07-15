@@ -105,6 +105,18 @@ export const demoEscalationEvents: EscalationEvent[] = [
           { capturedDetail: "$247.50 post-cancellation charge", reuseInstruction: "Continue from the KB-203 same-day reversal exception; do not replay the standard refund script." },
           { capturedDetail: "Prior support contact", reuseInstruction: "Reference call_2801 and REF-2847-JM; do not miss the repeat-contact acknowledgement before asking new questions." }
         ]
+      },
+      highValueActionGate: {
+        action: "Approve KB-203 same-day reversal",
+        amountUsd: 247.50,
+        verificationSignals: ["Account email supplied in-call", "Inbound phone matched account record"],
+        status: "step_up_required",
+        automatedActionBlocked: true,
+        requiredNextChecks: [
+          "Complete a one-time code challenge through the authenticated account app.",
+          "Confirm processor status and duplicate reversal risk before approval."
+        ],
+        riskRationale: "Email and inbound caller number identify account context but do not independently authorize a $247.50 expedited refund."
       }
     }
   }

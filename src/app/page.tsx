@@ -173,6 +173,24 @@ export default function Home() {
                       ))}
                     </ul>
                   </div>
+                  <div
+                    className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-xs leading-5 text-red-950"
+                    role="status"
+                    aria-label="Sensitive-action authorization requires step-up verification"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="font-bold text-slate-950">Sensitive-action authorization</p>
+                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-red-800">
+                        {e.handoffSummary.highValueActionGate.status.replaceAll("_", " ")}
+                      </span>
+                    </div>
+                    <p className="mt-1"><strong>Action:</strong> {e.handoffSummary.highValueActionGate.action} · ${e.handoffSummary.highValueActionGate.amountUsd.toFixed(2)}</p>
+                    <p><strong>Automated approval:</strong> {e.handoffSummary.highValueActionGate.automatedActionBlocked ? "Blocked" : "Allowed"}</p>
+                    <p className="mt-1">{e.handoffSummary.highValueActionGate.riskRationale}</p>
+                    <ul className="mt-2 list-disc pl-4">
+                      {e.handoffSummary.highValueActionGate.requiredNextChecks.map(item => <li key={item}>{item}</li>)}
+                    </ul>
+                  </div>
                   <div className="mt-3 rounded-lg bg-amber-50 p-3">
                     <p className="font-bold text-slate-950">Handoff readiness packet</p>
                     <ul className="mt-2 space-y-1">

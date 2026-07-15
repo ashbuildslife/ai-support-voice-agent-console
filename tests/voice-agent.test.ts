@@ -122,6 +122,26 @@ describe("escalation rubric handoff", () => {
     expect(priorContactGuardrail?.reuseInstruction).toContain("call_2801");
     expect(priorContactGuardrail?.reuseInstruction).toContain("REF-2847-JM");
   });
+
+  it("blocks the high-value same-day reversal until step-up verification succeeds", () => {
+    const gate = event.handoffSummary.highValueActionGate;
+
+    expect(gate.amountUsd).toBeGreaterThan(200);
+    expect(gate.status).toBe("step_up_required");
+    expect(gate.automatedActionBlocked).toBe(true);
+  });
+
+  it("requires an independent challenge and duplicate-refund review before approval", () => {
+    const gate = event.handoffSummary.highValueActionGate;
+    const checks = gate.requiredNextChecks.join(" ").toLowerCase();
+
+    expect(gate.verificationSignals).toEqual(
+      expect.arrayContaining(["Account email supplied in-call", "Inbound phone matched account record"])
+    );
+    expect(checks).toContain("one-time code");
+    expect(checks).toContain("duplicate reversal risk");
+    expect(gate.riskRationale).toContain("do not independently authorize");
+  });
 });
 
 describe("metrics", () => {

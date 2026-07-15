@@ -6,6 +6,7 @@ export type HandoffReadinessStatus = "ready" | "needs_review";
 export type HandoffDeliveryStatus = "queued" | "sent" | "acknowledged" | "needs_retry";
 export type RubricCategory = "clarity" | "accuracy" | "empathy" | "efficiency";
 export type TurnTakingEvent = "caller_barge_in" | "agent_interruption";
+export type SensitiveActionGateStatus = "allowed" | "step_up_required" | "blocked";
 
 export interface SentimentTimelineEntry {
   turnNumber: number; sentiment: Sentiment; confidence: number;
@@ -88,6 +89,16 @@ export interface SpecialistOpeningBrief {
   noRepeatGuardrails: NoRepeatGuardrail[];
 }
 
+export interface HighValueActionGate {
+  action: string;
+  amountUsd: number;
+  verificationSignals: string[];
+  status: SensitiveActionGateStatus;
+  automatedActionBlocked: boolean;
+  requiredNextChecks: string[];
+  riskRationale: string;
+}
+
 export interface EscalationHandoffSummary {
   customerIssue: string;
   attemptedResolution: string[];
@@ -103,6 +114,8 @@ export interface EscalationHandoffSummary {
   customerTransferNotice: CustomerTransferNotice;
   /** Agent-assist pre-brief the specialist sees before greeting the caller */
   specialistOpeningBrief: SpecialistOpeningBrief;
+  /** Authorization gate that prevents account context alone from approving a sensitive action */
+  highValueActionGate: HighValueActionGate;
 }
 
 export interface EscalationEvent {
