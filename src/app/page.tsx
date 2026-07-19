@@ -187,6 +187,12 @@ export default function Home() {
                     <p className="mt-1"><strong>Action:</strong> {e.handoffSummary.highValueActionGate.action} · ${e.handoffSummary.highValueActionGate.amountUsd.toFixed(2)}</p>
                     <p><strong>Automated approval:</strong> {e.handoffSummary.highValueActionGate.automatedActionBlocked ? "Blocked" : "Allowed"}</p>
                     <p className="mt-1">{e.handoffSummary.highValueActionGate.riskRationale}</p>
+                    <div className="mt-2 rounded-md border border-red-200 bg-white/70 p-2">
+                      <p className="font-semibold">Payment-data boundary · {e.handoffSummary.highValueActionGate.paymentDataIsolation.captureChannel.replaceAll("_", " ")}</p>
+                      <p>Model, transcript, and call recording access: blocked before capture.</p>
+                      <p>Retained evidence: {e.handoffSummary.highValueActionGate.paymentDataIsolation.retainedEvidence.join(", ")}.</p>
+                      <p>{e.handoffSummary.highValueActionGate.paymentDataIsolation.resumeCondition}</p>
+                    </div>
                     <ul className="mt-2 list-disc pl-4">
                       {e.handoffSummary.highValueActionGate.requiredNextChecks.map(item => <li key={item}>{item}</li>)}
                     </ul>

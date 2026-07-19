@@ -142,6 +142,24 @@ describe("escalation rubric handoff", () => {
     expect(checks).toContain("duplicate reversal risk");
     expect(gate.riskRationale).toContain("do not independently authorize");
   });
+
+  it("keeps card data outside the model, transcript, and recording", () => {
+    const boundary = event.handoffSummary.highValueActionGate.paymentDataIsolation;
+
+    expect(boundary.captureChannel).toBe("secure_dtmf");
+    expect(boundary.cardDataVisibleToModel).toBe(false);
+    expect(boundary.cardDataStoredInTranscript).toBe(false);
+    expect(boundary.cardDataStoredInRecording).toBe(false);
+  });
+
+  it("retains only masked payment evidence before AI assistance resumes", () => {
+    const boundary = event.handoffSummary.highValueActionGate.paymentDataIsolation;
+
+    expect(boundary.retainedEvidence).toEqual(
+      expect.arrayContaining(["processor reference", "authorization result", "masked payment-method suffix"])
+    );
+    expect(boundary.resumeCondition.toLowerCase()).toContain("secure capture is complete");
+  });
 });
 
 describe("metrics", () => {

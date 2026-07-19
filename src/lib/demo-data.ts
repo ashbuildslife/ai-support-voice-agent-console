@@ -116,7 +116,15 @@ export const demoEscalationEvents: EscalationEvent[] = [
           "Complete a one-time code challenge through the authenticated account app.",
           "Confirm processor status and duplicate reversal risk before approval."
         ],
-        riskRationale: "Email and inbound caller number identify account context but do not independently authorize a $247.50 expedited refund."
+        riskRationale: "Email and inbound caller number identify account context but do not independently authorize a $247.50 expedited refund.",
+        paymentDataIsolation: {
+          captureChannel: "secure_dtmf",
+          cardDataVisibleToModel: false,
+          cardDataStoredInTranscript: false,
+          cardDataStoredInRecording: false,
+          retainedEvidence: ["processor reference", "authorization result", "masked payment-method suffix"],
+          resumeCondition: "Resume AI assistance only after the payment provider confirms secure capture is complete."
+        }
       }
     }
   }

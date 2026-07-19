@@ -7,6 +7,7 @@ export type HandoffDeliveryStatus = "queued" | "sent" | "acknowledged" | "needs_
 export type RubricCategory = "clarity" | "accuracy" | "empathy" | "efficiency";
 export type TurnTakingEvent = "caller_barge_in" | "agent_interruption";
 export type SensitiveActionGateStatus = "allowed" | "step_up_required" | "blocked";
+export type PaymentCaptureChannel = "secure_dtmf" | "hosted_payment_link";
 
 export interface SentimentTimelineEntry {
   turnNumber: number; sentiment: Sentiment; confidence: number;
@@ -89,6 +90,16 @@ export interface SpecialistOpeningBrief {
   noRepeatGuardrails: NoRepeatGuardrail[];
 }
 
+export interface PaymentDataIsolation {
+  captureChannel: PaymentCaptureChannel;
+  /** Card digits never enter the AI model context or live transcript */
+  cardDataVisibleToModel: false;
+  cardDataStoredInTranscript: false;
+  cardDataStoredInRecording: false;
+  retainedEvidence: string[];
+  resumeCondition: string;
+}
+
 export interface HighValueActionGate {
   action: string;
   amountUsd: number;
@@ -97,6 +108,8 @@ export interface HighValueActionGate {
   automatedActionBlocked: boolean;
   requiredNextChecks: string[];
   riskRationale: string;
+  /** Pre-model boundary for any payment data requested during specialist review */
+  paymentDataIsolation: PaymentDataIsolation;
 }
 
 export interface EscalationHandoffSummary {
