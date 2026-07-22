@@ -187,6 +187,17 @@ export default function Home() {
                     <p className="mt-1"><strong>Action:</strong> {e.handoffSummary.highValueActionGate.action} · ${e.handoffSummary.highValueActionGate.amountUsd.toFixed(2)}</p>
                     <p><strong>Automated approval:</strong> {e.handoffSummary.highValueActionGate.automatedActionBlocked ? "Blocked" : "Allowed"}</p>
                     <p className="mt-1">{e.handoffSummary.highValueActionGate.riskRationale}</p>
+                    <div
+                      className="mt-2 rounded-md border border-amber-200 bg-amber-50/80 p-2"
+                      role="status"
+                      aria-label="Voice and caller ID are not accepted as authorization"
+                    >
+                      <p className="font-semibold">Caller authentication boundary</p>
+                      <p><strong>Voice biometric authorization:</strong> {e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.voiceBiometricAccepted ? "Accepted" : "Not accepted"}</p>
+                      <p><strong>Caller ID authorization:</strong> {e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.callerIdAcceptedAsAuthenticator ? "Accepted" : "Context only"}</p>
+                      <p><strong>Required factor:</strong> {e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.requiredIndependentFactor.replaceAll("_", " ")} · {e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.challengeStatus}</p>
+                      <p>{e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.failureRoute}</p>
+                    </div>
                     <div className="mt-2 rounded-md border border-red-200 bg-white/70 p-2">
                       <p className="font-semibold">Payment-data boundary · {e.handoffSummary.highValueActionGate.paymentDataIsolation.captureChannel.replaceAll("_", " ")}</p>
                       <p>Model, transcript, and call recording access: blocked before capture.</p>

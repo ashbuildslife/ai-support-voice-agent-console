@@ -143,6 +143,24 @@ describe("escalation rubric handoff", () => {
     expect(gate.riskRationale).toContain("do not independently authorize");
   });
 
+  it("rejects voice biometrics and caller ID as authorization", () => {
+    const gate = event.handoffSummary.highValueActionGate;
+    const boundary = gate.callerAuthenticationBoundary;
+
+    expect(boundary.voiceBiometricAccepted).toBe(false);
+    expect(boundary.callerIdAcceptedAsAuthenticator).toBe(false);
+    expect(boundary.challengeStatus).toBe("pending");
+    expect(gate.automatedActionBlocked).toBe(true);
+  });
+
+  it("requires possession-bound proof before the sensitive action can continue", () => {
+    const boundary = event.handoffSummary.highValueActionGate.callerAuthenticationBoundary;
+
+    expect(boundary.requiredIndependentFactor).toBe("authenticated_app_challenge");
+    expect(boundary.failureRoute.toLowerCase()).toContain("identity-fraud review");
+    expect(boundary.failureRoute.toLowerCase()).toContain("refund blocked");
+  });
+
   it("keeps card data outside the model, transcript, and recording", () => {
     const boundary = event.handoffSummary.highValueActionGate.paymentDataIsolation;
 

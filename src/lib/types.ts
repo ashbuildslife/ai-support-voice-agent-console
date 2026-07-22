@@ -8,6 +8,8 @@ export type RubricCategory = "clarity" | "accuracy" | "empathy" | "efficiency";
 export type TurnTakingEvent = "caller_barge_in" | "agent_interruption";
 export type SensitiveActionGateStatus = "allowed" | "step_up_required" | "blocked";
 export type PaymentCaptureChannel = "secure_dtmf" | "hosted_payment_link";
+export type IndependentCallerFactor = "authenticated_app_challenge" | "security_key";
+export type CallerChallengeStatus = "pending" | "verified";
 
 export interface SentimentTimelineEntry {
   turnNumber: number; sentiment: Sentiment; confidence: number;
@@ -100,6 +102,16 @@ export interface PaymentDataIsolation {
   resumeCondition: string;
 }
 
+export interface CallerAuthenticationBoundary {
+  /** Voice biometric comparison is not accepted as an authentication factor */
+  voiceBiometricAccepted: false;
+  /** ANI/caller ID is routing context, not proof of account control */
+  callerIdAcceptedAsAuthenticator: false;
+  requiredIndependentFactor: IndependentCallerFactor;
+  challengeStatus: CallerChallengeStatus;
+  failureRoute: string;
+}
+
 export interface HighValueActionGate {
   action: string;
   amountUsd: number;
@@ -108,6 +120,8 @@ export interface HighValueActionGate {
   automatedActionBlocked: boolean;
   requiredNextChecks: string[];
   riskRationale: string;
+  /** Keeps voice and caller ID as context only until possession-bound proof succeeds */
+  callerAuthenticationBoundary: CallerAuthenticationBoundary;
   /** Pre-model boundary for any payment data requested during specialist review */
   paymentDataIsolation: PaymentDataIsolation;
 }

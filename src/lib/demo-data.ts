@@ -117,6 +117,13 @@ export const demoEscalationEvents: EscalationEvent[] = [
           "Confirm processor status and duplicate reversal risk before approval."
         ],
         riskRationale: "Email and inbound caller number identify account context but do not independently authorize a $247.50 expedited refund.",
+        callerAuthenticationBoundary: {
+          voiceBiometricAccepted: false,
+          callerIdAcceptedAsAuthenticator: false,
+          requiredIndependentFactor: "authenticated_app_challenge",
+          challengeStatus: "pending",
+          failureRoute: "Keep the refund blocked and route to identity-fraud review if possession proof fails."
+        },
         paymentDataIsolation: {
           captureChannel: "secure_dtmf",
           cardDataVisibleToModel: false,
