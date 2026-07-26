@@ -122,7 +122,14 @@ export const demoEscalationEvents: EscalationEvent[] = [
           callerIdAcceptedAsAuthenticator: false,
           requiredIndependentFactor: "authenticated_app_challenge",
           challengeStatus: "pending",
-          failureRoute: "Keep the refund blocked and route to identity-fraud review if possession proof fails."
+          failureRoute: "Keep the refund blocked and route to identity-fraud review if possession proof fails.",
+          syntheticSpeechRiskAssessment: {
+            status: "suspected",
+            confidence: 0.84,
+            acceptedAsAuthenticator: false,
+            evidence: ["Synthetic-audio screen flagged temporal artifacts during the expedited-refund request."],
+            requiredResponse: "hold_for_identity_fraud_review"
+          }
         },
         paymentDataIsolation: {
           captureChannel: "secure_dtmf",

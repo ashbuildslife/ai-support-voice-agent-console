@@ -190,13 +190,18 @@ export default function Home() {
                     <div
                       className="mt-2 rounded-md border border-amber-200 bg-amber-50/80 p-2"
                       role="status"
-                      aria-label="Voice and caller ID are not accepted as authorization"
+                      aria-label="Voice, caller ID, and synthetic-speech screening are not accepted as authorization"
                     >
                       <p className="font-semibold">Caller authentication boundary</p>
                       <p><strong>Voice biometric authorization:</strong> {e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.voiceBiometricAccepted ? "Accepted" : "Not accepted"}</p>
                       <p><strong>Caller ID authorization:</strong> {e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.callerIdAcceptedAsAuthenticator ? "Accepted" : "Context only"}</p>
                       <p><strong>Required factor:</strong> {e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.requiredIndependentFactor.replaceAll("_", " ")} · {e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.challengeStatus}</p>
                       <p>{e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.failureRoute}</p>
+                      <div className="mt-2 rounded-md border border-red-200 bg-white/80 p-2">
+                        <p className="font-semibold">Synthetic-speech risk screen · {e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.syntheticSpeechRiskAssessment.status.replaceAll("_", " ")}</p>
+                        <p>Confidence: {e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.syntheticSpeechRiskAssessment.confidence === null ? "Unavailable" : `${Math.round(e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.syntheticSpeechRiskAssessment.confidence * 100)}%`} · risk signal only, never an authenticator.</p>
+                        <p>Response: {e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.syntheticSpeechRiskAssessment.requiredResponse.replaceAll("_", " ")}.</p>
+                      </div>
                     </div>
                     <div className="mt-2 rounded-md border border-red-200 bg-white/70 p-2">
                       <p className="font-semibold">Payment-data boundary · {e.handoffSummary.highValueActionGate.paymentDataIsolation.captureChannel.replaceAll("_", " ")}</p>

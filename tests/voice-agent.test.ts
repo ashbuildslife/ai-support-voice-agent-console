@@ -161,6 +161,24 @@ describe("escalation rubric handoff", () => {
     expect(boundary.failureRoute.toLowerCase()).toContain("refund blocked");
   });
 
+  it("holds suspected synthetic speech for identity-fraud review", () => {
+    const gate = event.handoffSummary.highValueActionGate;
+    const assessment = gate.callerAuthenticationBoundary.syntheticSpeechRiskAssessment;
+
+    expect(assessment.status).toBe("suspected");
+    expect(assessment.confidence).toBeGreaterThan(0.8);
+    expect(assessment.requiredResponse).toBe("hold_for_identity_fraud_review");
+    expect(gate.automatedActionBlocked).toBe(true);
+  });
+
+  it("does not let synthetic-speech screening replace possession-bound proof", () => {
+    const boundary = event.handoffSummary.highValueActionGate.callerAuthenticationBoundary;
+
+    expect(boundary.syntheticSpeechRiskAssessment.acceptedAsAuthenticator).toBe(false);
+    expect(boundary.requiredIndependentFactor).toBe("authenticated_app_challenge");
+    expect(boundary.challengeStatus).toBe("pending");
+  });
+
   it("keeps card data outside the model, transcript, and recording", () => {
     const boundary = event.handoffSummary.highValueActionGate.paymentDataIsolation;
 

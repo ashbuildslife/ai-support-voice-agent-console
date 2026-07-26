@@ -10,6 +10,8 @@ export type SensitiveActionGateStatus = "allowed" | "step_up_required" | "blocke
 export type PaymentCaptureChannel = "secure_dtmf" | "hosted_payment_link";
 export type IndependentCallerFactor = "authenticated_app_challenge" | "security_key";
 export type CallerChallengeStatus = "pending" | "verified";
+export type SyntheticSpeechRiskStatus = "not_detected" | "suspected" | "unavailable";
+export type SyntheticSpeechRiskResponse = "continue_independent_challenge" | "hold_for_identity_fraud_review";
 
 export interface SentimentTimelineEntry {
   turnNumber: number; sentiment: Sentiment; confidence: number;
@@ -102,6 +104,15 @@ export interface PaymentDataIsolation {
   resumeCondition: string;
 }
 
+export interface SyntheticSpeechRiskAssessment {
+  status: SyntheticSpeechRiskStatus;
+  /** Null when screening is unavailable; never treated as identity proof */
+  confidence: number | null;
+  acceptedAsAuthenticator: false;
+  evidence: string[];
+  requiredResponse: SyntheticSpeechRiskResponse;
+}
+
 export interface CallerAuthenticationBoundary {
   /** Voice biometric comparison is not accepted as an authentication factor */
   voiceBiometricAccepted: false;
@@ -110,6 +121,8 @@ export interface CallerAuthenticationBoundary {
   requiredIndependentFactor: IndependentCallerFactor;
   challengeStatus: CallerChallengeStatus;
   failureRoute: string;
+  /** Synthetic-speech screening can raise risk but can never authorize the caller */
+  syntheticSpeechRiskAssessment: SyntheticSpeechRiskAssessment;
 }
 
 export interface HighValueActionGate {
