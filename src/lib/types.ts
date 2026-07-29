@@ -12,6 +12,8 @@ export type IndependentCallerFactor = "authenticated_app_challenge" | "security_
 export type CallerChallengeStatus = "pending" | "verified";
 export type SyntheticSpeechRiskStatus = "not_detected" | "suspected" | "unavailable";
 export type SyntheticSpeechRiskResponse = "continue_independent_challenge" | "hold_for_identity_fraud_review";
+export type SensitiveTranscriptDataCategory = "email_address" | "account_identifier" | "payment_data";
+export type SensitiveTranscriptRedactionStatus = "redacted_before_model";
 
 export interface SentimentTimelineEntry {
   turnNumber: number; sentiment: Sentiment; confidence: number;
@@ -44,10 +46,21 @@ export interface SupportCall {
 export interface TranscriptTurn {
   id: string; callId: string; speaker: "ai" | "caller"; text: string;
   timestamp: string; intent?: IntentCategory; confidence?: number;
+  /** Sensitive caller data is replaced before model context, transcript storage, and recording retention */
+  sensitiveDataRedaction?: SensitiveTranscriptRedaction;
   /** Seconds of silence before this turn began — the #1 latency pain point in voice AI */
   silenceBeforeSeconds?: number;
   /** Turn-taking telemetry for interruptions that should not be mistaken for dead air */
   turnTakingSignal?: TurnTakingSignal;
+}
+
+export interface SensitiveTranscriptRedaction {
+  category: SensitiveTranscriptDataCategory;
+  status: SensitiveTranscriptRedactionStatus;
+  rawValueInModelContext: false;
+  rawValueStoredInTranscript: false;
+  rawValueStoredInRecording: false;
+  retainedEvidence: string[];
 }
 
 export interface KBArticle {

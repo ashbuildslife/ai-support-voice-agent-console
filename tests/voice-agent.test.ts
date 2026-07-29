@@ -7,6 +7,25 @@ describe("transcript", () => {
     expect(demoTranscript[0].speaker).toBe("ai");
     expect(demoTranscript[0].text.toLowerCase()).toContain("ai assistant");
   });
+
+  it("redacts the caller email before model context or transcript storage", () => {
+    const emailTurn = demoTranscript.find(turn => turn.id === "t4");
+
+    expect(emailTurn?.text).toContain("[EMAIL REDACTED]");
+    expect(JSON.stringify(demoTranscript)).not.toContain("james.morrison@gmail.com");
+    expect(emailTurn?.sensitiveDataRedaction?.status).toBe("redacted_before_model");
+    expect(emailTurn?.sensitiveDataRedaction?.rawValueInModelContext).toBe(false);
+  });
+
+  it("keeps sensitive caller data out of stored transcripts and recordings", () => {
+    const treatment = demoTranscript.find(turn => turn.id === "t4")?.sensitiveDataRedaction;
+
+    expect(treatment?.rawValueStoredInTranscript).toBe(false);
+    expect(treatment?.rawValueStoredInRecording).toBe(false);
+    expect(treatment?.retainedEvidence).toEqual(
+      expect.arrayContaining(["verified account lookup token", expect.stringContaining("redaction audit event")])
+    );
+  });
 });
 
 describe("frustration detection", () => {

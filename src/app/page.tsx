@@ -81,6 +81,16 @@ export default function Home() {
      </span>
      <div className="flex items-center gap-2">
        {turn.intent && <IntentBadge intent={turn.intent} />}
+       {turn.sensitiveDataRedaction && (
+         <span
+           className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800"
+           role="status"
+           aria-label="Sensitive caller data redacted before AI model context and storage"
+           title="Raw value excluded from model context, transcript storage, and recording retention"
+         >
+           Privacy redacted
+         </span>
+       )}
        <span className="text-slate-400">{turn.timestamp}</span>
        {turn.silenceBeforeSeconds !== undefined && turn.silenceBeforeSeconds > 2.5 && (
          <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700" title={`${turn.silenceBeforeSeconds}s silence before reply`}>
