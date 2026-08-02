@@ -14,6 +14,8 @@ export type SyntheticSpeechRiskStatus = "not_detected" | "suspected" | "unavaila
 export type SyntheticSpeechRiskResponse = "continue_independent_challenge" | "hold_for_identity_fraud_review";
 export type SensitiveTranscriptDataCategory = "email_address" | "account_identifier" | "payment_data";
 export type SensitiveTranscriptRedactionStatus = "redacted_before_model";
+export type RecordingConsentStatus = "granted" | "declined";
+export type RecordingConsentEnforcement = "record_and_transcribe" | "disable_recording_and_transcription";
 
 export interface SentimentTimelineEntry {
   turnNumber: number; sentiment: Sentiment; confidence: number;
@@ -26,6 +28,20 @@ export interface TurnTakingSignal {
   /** Confirms the caller's complete utterance survived the interruption */
   callerUtterancePreserved: boolean;
 }
+
+export type RecordingConsentDecision =
+  | {
+      status: "granted";
+      capturedAtTurnId: string;
+      enforcement: "record_and_transcribe";
+      carriedIntoHumanHandoff: boolean;
+    }
+  | {
+      status: "declined";
+      capturedAtTurnId: string;
+      enforcement: "disable_recording_and_transcription";
+      carriedIntoHumanHandoff: boolean;
+    };
 
 export interface SupportCall {
   id: string; callerName: string; callerPhone: string; intent: IntentCategory;
@@ -41,6 +57,8 @@ export interface SupportCall {
   resolvedOnFirstContact: boolean;
   /** The prior call ID when this is a repeat contact (null for first contacts) */
   previousCallId: string | null;
+  /** Caller choice is captured before recording and enforced across AI-to-human transfer */
+  recordingConsent: RecordingConsentDecision;
 }
 
 export interface TranscriptTurn {

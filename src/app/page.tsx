@@ -52,7 +52,8 @@ export default function Home() {
             { label: "Caller", value: demoActiveCall.callerName },
             { label: "Duration", value: demoActiveCall.duration },
             { label: "CSAT predicted", value: `${demoActiveCall.csatPredicted}/100` },
-            { label: "Escalated", value: demoActiveCall.escalationTriggered ? "Yes — turn 7" : "No" }
+            { label: "Escalated", value: demoActiveCall.escalationTriggered ? "Yes — turn 7" : "No" },
+            { label: "Recording consent", value: demoActiveCall.recordingConsent.status === "granted" ? "Granted · handoff-safe" : "Declined · disabled" }
           ].map(s => (
             <div key={s.label} className="rounded-2xl bg-slate-950 p-4 text-white">
               <p className="text-sm text-slate-300">{s.label}</p>

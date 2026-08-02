@@ -28,6 +28,27 @@ describe("transcript", () => {
   });
 });
 
+describe("recording consent continuity", () => {
+  it("captures caller consent at the opening turn before later transcript content", () => {
+    const consent = demoActiveCall.recordingConsent;
+
+    expect(consent.status).toBe("granted");
+    expect(consent.capturedAtTurnId).toBe(demoTranscript[1].id);
+    expect(demoTranscript[0].text.toLowerCase()).toContain("recorded and transcribed");
+    expect(demoTranscript[1].text.toLowerCase()).toContain("yes, that's okay");
+  });
+
+  it("enforces recording and transcription only from the captured decision", () => {
+    const consent = demoActiveCall.recordingConsent;
+
+    expect(consent.enforcement).toBe("record_and_transcribe");
+  });
+
+  it("carries the consent decision into the human handoff", () => {
+    expect(demoActiveCall.recordingConsent.carriedIntoHumanHandoff).toBe(true);
+  });
+});
+
 describe("frustration detection", () => {
   it("detected frustration keywords", () => {
     expect(demoFrustrationAlerts.length).toBeGreaterThan(0);

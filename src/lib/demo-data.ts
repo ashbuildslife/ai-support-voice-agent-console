@@ -19,12 +19,18 @@ export const demoActiveCall: SupportCall = {
   sentimentTimeline: demoSentimentTimeline,
   churnRisk: 72,
   resolvedOnFirstContact: false,
-  previousCallId: "call_2801"
+  previousCallId: "call_2801",
+  recordingConsent: {
+    status: "granted",
+    capturedAtTurnId: "t2",
+    enforcement: "record_and_transcribe",
+    carriedIntoHumanHandoff: true
+  }
 };
 
 export const demoTranscript: TranscriptTurn[] = [
-  { id: "t1", callId: "call_2847", speaker: "ai", text: "Thank you for calling CloudServe support. I'm Ava, an AI assistant — just so you know, you're speaking with an automated system. How can I help?", timestamp: "00:00", intent: "general", confidence: 0.99, silenceBeforeSeconds: 0.5 },
-  { id: "t2", callId: "call_2847", speaker: "caller", text: "Yeah, I just got charged $247.50 and I cancelled my subscription two weeks ago. I need this refunded.", timestamp: "00:12", intent: "billing", confidence: 0.94, silenceBeforeSeconds: 1.8 },
+  { id: "t1", callId: "call_2847", speaker: "ai", text: "Thank you for calling CloudServe support. I'm Ava, an AI assistant. With your permission, this call will be recorded and transcribed. Is that okay?", timestamp: "00:00", intent: "general", confidence: 0.99, silenceBeforeSeconds: 0.5 },
+  { id: "t2", callId: "call_2847", speaker: "caller", text: "Yes, that's okay. I just got charged $247.50 and I cancelled my subscription two weeks ago. I need this refunded.", timestamp: "00:12", intent: "billing", confidence: 0.94, silenceBeforeSeconds: 1.8 },
   { id: "t3", callId: "call_2847", speaker: "ai", text: "I understand. Let me look up your account. According to our knowledge base article KB-142 on cancellation and billing, charges posted within 30 days of cancellation should be automatically reversed. Can you confirm the email on your account?", timestamp: "00:18", intent: "billing", confidence: 0.91, silenceBeforeSeconds: 2.1 },
   { id: "t4", callId: "call_2847", speaker: "caller", text: "[EMAIL REDACTED]. But I already talked to someone last week and they said it would be handled. This is getting ridiculous.", timestamp: "00:45", intent: "billing", confidence: 0.89, silenceBeforeSeconds: 2.4, sensitiveDataRedaction: { category: "email_address", status: "redacted_before_model", rawValueInModelContext: false, rawValueStoredInTranscript: false, rawValueStoredInRecording: false, retainedEvidence: ["verified account lookup token", "redaction audit event pii_2847_t4"] } },
   { id: "t5", callId: "call_2847", speaker: "ai", text: "I found your account, James. I can see the cancellation was processed on May 22nd, and the charge on June 1st for $247.50 should not have occurred. According to KB-142, this qualifies for an automatic refund within 5–7 business days. I've initiated that refund now.", timestamp: "01:12", intent: "billing", confidence: 0.87, silenceBeforeSeconds: 3.2 },
