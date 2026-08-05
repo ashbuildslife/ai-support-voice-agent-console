@@ -16,6 +16,7 @@ export type SensitiveTranscriptDataCategory = "email_address" | "account_identif
 export type SensitiveTranscriptRedactionStatus = "redacted_before_model";
 export type RecordingConsentStatus = "granted" | "declined";
 export type RecordingConsentEnforcement = "record_and_transcribe" | "disable_recording_and_transcription";
+export type SpokenCommitmentStatus = "open" | "superseded" | "fulfilled";
 
 export interface SentimentTimelineEntry {
   turnNumber: number; sentiment: Sentiment; confidence: number;
@@ -125,6 +126,18 @@ export interface SpecialistOpeningBrief {
   noRepeatGuardrails: NoRepeatGuardrail[];
 }
 
+export interface SpokenCommitment {
+  id: string;
+  /** Transcript turn where the AI made the promise — every commitment is source-anchored */
+  sourceTurnId: string;
+  commitment: string;
+  status: SpokenCommitmentStatus;
+  /** When a later commitment replaces this one, fulfilling the superseded promise would duplicate the action */
+  supersededByCommitmentId: string | null;
+  /** Null while fulfillment is unverified; a superseded commitment must never gain fulfillment evidence */
+  fulfillmentEvidence: string | null;
+}
+
 export interface PaymentDataIsolation {
   captureChannel: PaymentCaptureChannel;
   /** Card digits never enter the AI model context or live transcript */
@@ -185,6 +198,8 @@ export interface EscalationHandoffSummary {
   customerTransferNotice: CustomerTransferNotice;
   /** Agent-assist pre-brief the specialist sees before greeting the caller */
   specialistOpeningBrief: SpecialistOpeningBrief;
+  /** Source-anchored register of promises the AI made during the call, so superseded refunds cannot be fulfilled twice */
+  spokenCommitments: SpokenCommitment[];
   /** Authorization gate that prevents account context alone from approving a sensitive action */
   highValueActionGate: HighValueActionGate;
 }

@@ -238,6 +238,52 @@ describe("escalation rubric handoff", () => {
   });
 });
 
+describe("spoken commitment register", () => {
+  const commitments = demoEscalationEvents[0].handoffSummary.spokenCommitments;
+
+  it("anchors every commitment to a real transcript turn", () => {
+    const turnIds = demoTranscript.map(turn => turn.id);
+
+    expect(commitments.length).toBeGreaterThanOrEqual(2);
+    expect(commitments.every(item => turnIds.includes(item.sourceTurnId))).toBe(true);
+  });
+
+  it("blocks the superseded standard refund from also being fulfilled", () => {
+    const superseded = commitments.find(item => item.status === "superseded");
+
+    expect(superseded?.sourceTurnId).toBe("t5");
+    expect(superseded?.supersededByCommitmentId).toBe("cmt_t7_expedited_reversal");
+    expect(superseded?.fulfillmentEvidence).toBeNull();
+  });
+
+  it("keeps exactly one open refund commitment travelling with the handoff", () => {
+    const openRefundCommitments = commitments.filter(
+      item => item.status === "open" && item.commitment.toLowerCase().includes("reversal")
+    );
+
+    expect(openRefundCommitments).toHaveLength(1);
+    expect(openRefundCommitments[0].sourceTurnId).toBe("t7");
+    expect(openRefundCommitments[0].commitment.toLowerCase()).toContain("processor-status");
+    expect(openRefundCommitments[0].fulfillmentEvidence).toBeNull();
+  });
+
+  it("prevents two refund promises from being open or fulfilled at once", () => {
+    const activeRefundCommitments = commitments.filter(
+      item => item.status !== "superseded" && /refund|reversal/i.test(item.commitment)
+    );
+
+    expect(activeRefundCommitments.length).toBeLessThanOrEqual(1);
+  });
+
+  it("carries fulfillment evidence for the context-transfer promise only", () => {
+    const fulfilled = commitments.filter(item => item.status === "fulfilled");
+
+    expect(fulfilled).toHaveLength(1);
+    expect(fulfilled[0].commitment.toLowerCase()).toContain("repeat information");
+    expect(fulfilled[0].fulfillmentEvidence).toContain("acknowledged");
+  });
+});
+
 describe("metrics", () => {
   it("total matches sum of outcomes", () => {
     expect(demoMetrics.resolvedCount + demoMetrics.escalatedCount).toBeLessThanOrEqual(demoMetrics.totalCalls);

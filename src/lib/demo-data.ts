@@ -112,6 +112,32 @@ export const demoEscalationEvents: EscalationEvent[] = [
           { capturedDetail: "Prior support contact", reuseInstruction: "Reference call_2801 and REF-2847-JM; do not miss the repeat-contact acknowledgement before asking new questions." }
         ]
       },
+      spokenCommitments: [
+        {
+          id: "cmt_t5_standard_refund",
+          sourceTurnId: "t5",
+          commitment: "Standard $247.50 refund initiated; deposit within 5–7 business days per KB-142.",
+          status: "superseded",
+          supersededByCommitmentId: "cmt_t7_expedited_reversal",
+          fulfillmentEvidence: null
+        },
+        {
+          id: "cmt_t7_expedited_reversal",
+          sourceTurnId: "t7",
+          commitment: "Same-day expedited reversal under KB-203 exception (b), released only after step-up verification and processor-status confirmation.",
+          status: "open",
+          supersededByCommitmentId: null,
+          fulfillmentEvidence: null
+        },
+        {
+          id: "cmt_t9_context_transfer",
+          sourceTurnId: "t9",
+          commitment: "Caller will not need to repeat information; the specialist receives full call context and reference REF-2847-JM.",
+          status: "fulfilled",
+          supersededByCommitmentId: null,
+          fulfillmentEvidence: "Context delivery audit acknowledged at the specialist desktop 18s before live transfer."
+        }
+      ],
       highValueActionGate: {
         action: "Approve KB-203 same-day reversal",
         amountUsd: 247.50,

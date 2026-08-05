@@ -253,6 +253,31 @@ export default function Home() {
                     </ul>
                     <p className="mt-2"><strong>Repeat expectation:</strong> {e.handoffSummary.customerTransferNotice.repeatExpectation}</p>
                   </div>
+                  <div
+                    className="mt-3 rounded-lg border border-violet-100 bg-violet-50 p-3 text-xs leading-5 text-violet-950"
+                    role="status"
+                    aria-label="Register of commitments the AI made during the call"
+                  >
+                    <p className="font-bold text-slate-950">AI spoken commitments</p>
+                    <ul className="mt-2 space-y-1">
+                      {e.handoffSummary.spokenCommitments.map(item => (
+                        <li key={item.id} className="flex gap-2">
+                          <span className={`mt-0.5 rounded-full px-2 py-0.5 text-[10px] font-bold ${item.status === "fulfilled" ? "bg-emerald-100 text-emerald-700" : item.status === "open" ? "bg-amber-200 text-amber-900" : "bg-slate-200 text-slate-600"}`}>
+                            {item.status}
+                          </span>
+                          <span>
+                            <strong>Turn {item.sourceTurnId}:</strong> {item.commitment}
+                            {item.status === "superseded" && item.supersededByCommitmentId && (
+                              <span className="text-slate-500"> — replaced by {item.supersededByCommitmentId}; fulfillment blocked to prevent a duplicate refund.</span>
+                            )}
+                            {item.fulfillmentEvidence && (
+                              <span className="text-emerald-800"> — {item.fulfillmentEvidence}</span>
+                            )}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                   <p className="mt-2 text-amber-800"><strong>Risk flags:</strong> {e.riskFlags.join(", ")}</p>
                 </div>
                 <p className="mt-2 text-xs text-slate-400">At {e.atTimestamp}</p>
