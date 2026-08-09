@@ -119,7 +119,11 @@ export const demoEscalationEvents: EscalationEvent[] = [
           commitment: "Standard $247.50 refund initiated; deposit within 5–7 business days per KB-142.",
           status: "superseded",
           supersededByCommitmentId: "cmt_t7_expedited_reversal",
-          fulfillmentEvidence: null
+          fulfillmentEvidence: null,
+          evidenceAnchors: [
+            "Turn 5 AI: \"I've initiated that refund now.\"",
+            "Turn 5 AI: \"this qualifies for an automatic refund within 5–7 business days\""
+          ]
         },
         {
           id: "cmt_t7_expedited_reversal",
@@ -127,7 +131,11 @@ export const demoEscalationEvents: EscalationEvent[] = [
           commitment: "Same-day expedited reversal under KB-203 exception (b), released only after step-up verification and processor-status confirmation.",
           status: "open",
           supersededByCommitmentId: null,
-          fulfillmentEvidence: null
+          fulfillmentEvidence: null,
+          evidenceAnchors: [
+            "Turn 7 AI: \"Your case qualifies. Let me escalate this to our billing specialist team.\"",
+            "Turn 7 KB-203: Charges exceeding $200 post-cancellation qualify for same-day reversal"
+          ]
         },
         {
           id: "cmt_t9_context_transfer",
@@ -135,7 +143,12 @@ export const demoEscalationEvents: EscalationEvent[] = [
           commitment: "Caller will not need to repeat information; the specialist receives full call context and reference REF-2847-JM.",
           status: "fulfilled",
           supersededByCommitmentId: null,
-          fulfillmentEvidence: "Context delivery audit acknowledged at the specialist desktop 18s before live transfer."
+          fulfillmentEvidence: "Context delivery audit acknowledged at the specialist desktop 18s before live transfer.",
+          evidenceAnchors: [
+            "Turn 9 AI: \"She'll have your full call context and refund details.\"",
+            "Turn 9 AI: \"You should not need to repeat any information.\"",
+            "Delivery audit: acknowledgementRequired=true, status=acknowledged"
+          ]
         }
       ],
       highValueActionGate: {

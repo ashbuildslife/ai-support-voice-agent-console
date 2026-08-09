@@ -284,6 +284,37 @@ describe("spoken commitment register", () => {
   });
 });
 
+describe("spoken commitment evidence anchors", () => {
+  const commitments = demoEscalationEvents[0].handoffSummary.spokenCommitments;
+
+  it("anchors each commitment with direct quote excerpts from the transcript", () => {
+    expect(commitments.every(item => item.evidenceAnchors.length > 0)).toBe(true);
+    expect(commitments.some(item => item.evidenceAnchors.some(anchor => anchor.includes("Turn")))).toBe(true);
+  });
+
+  it("provides specialist-facing proof that the standard refund was promised in turn 5", () => {
+    const standard = commitments.find(item => item.id === "cmt_t5_standard_refund");
+    expect(standard?.evidenceAnchors).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("Turn 5"),
+        expect.stringContaining("initiated that refund")
+      ])
+    );
+  });
+
+  it("surfaces the KB-203 expedited reversal promise with policy anchor", () => {
+    const expedited = commitments.find(item => item.id === "cmt_t7_expedited_reversal");
+    expect(expedited?.evidenceAnchors.some(a => a.includes("KB-203"))).toBe(true);
+    expect(expedited?.evidenceAnchors.some(a => a.includes("200"))).toBe(true);
+  });
+
+  it("shows the delivery audit evidence alongside the context-transfer promise", () => {
+    const transfer = commitments.find(item => item.id === "cmt_t9_context_transfer");
+    expect(transfer?.evidenceAnchors.some(a => a.includes("acknowledged"))).toBe(true);
+    expect(transfer?.evidenceAnchors.some(a => a.includes("Delivery audit"))).toBe(true);
+  });
+});
+
 describe("metrics", () => {
   it("total matches sum of outcomes", () => {
     expect(demoMetrics.resolvedCount + demoMetrics.escalatedCount).toBeLessThanOrEqual(demoMetrics.totalCalls);

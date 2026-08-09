@@ -136,6 +136,8 @@ export interface SpokenCommitment {
   supersededByCommitmentId: string | null;
   /** Null while fulfillment is unverified; a superseded commitment must never gain fulfillment evidence */
   fulfillmentEvidence: string | null;
+  /** Quote excerpts from the source turn that the specialist can cite back to the caller for context verification */
+  evidenceAnchors: string[];
 }
 
 export interface PaymentDataIsolation {
