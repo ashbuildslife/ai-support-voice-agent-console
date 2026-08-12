@@ -5,7 +5,9 @@ export type EscalationAction = "continue" | "clarify" | "human_handoff" | "qa_re
 export type HandoffReadinessStatus = "ready" | "needs_review";
 export type HandoffDeliveryStatus = "queued" | "sent" | "acknowledged" | "needs_retry";
 export type RubricCategory = "clarity" | "accuracy" | "empathy" | "efficiency";
-export type TurnTakingEvent = "caller_barge_in" | "agent_interruption";
+export type TurnTakingEvent = "caller_barge_in" | "false_barge_in" | "agent_interruption";
+export type TurnTakingDecision = "yield" | "ignore";
+export type TurnTakingTriggerSource = "caller_speech" | "background_noise" | "short_backchannel";
 export type SensitiveActionGateStatus = "allowed" | "step_up_required" | "blocked";
 export type PaymentCaptureChannel = "secure_dtmf" | "hosted_payment_link";
 export type IndependentCallerFactor = "authenticated_app_challenge" | "security_key";
@@ -24,10 +26,14 @@ export interface SentimentTimelineEntry {
 
 export interface TurnTakingSignal {
   event: TurnTakingEvent;
-  /** Milliseconds from caller speech detection until the agent stopped talking */
+  /** yield = the agent stopped talking; ignore = the detection was dismissed as noise or a backchannel */
+  decision: TurnTakingDecision;
+  /** What tripped the detector */
+  triggerSource: TurnTakingTriggerSource;
+  /** Milliseconds from caller speech detection until the agent stopped talking (0 when the detection was ignored) */
   agentYieldMs: number;
-  /** Confirms the caller's complete utterance survived the interruption */
-  callerUtterancePreserved: boolean;
+  /** Confirms the caller's complete utterance survived the interruption; null when the detection involved no caller speech */
+  callerUtterancePreserved: boolean | null;
 }
 
 export type RecordingConsentDecision =

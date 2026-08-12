@@ -392,6 +392,44 @@ describe("silence gaps (latency)", () => {
   });
 });
 
+describe("turn-taking telemetry (false barge-ins)", () => {
+  it("classifies noise-triggered detections separately from real caller barge-ins", () => {
+    const events = demoTranscript
+      .map(t => t.turnTakingSignal?.event)
+      .filter(e => e !== undefined);
+
+    expect(events).toEqual(expect.arrayContaining(["caller_barge_in", "false_barge_in"]));
+  });
+
+  it("ignores background noise and short backchannels without yielding the floor", () => {
+    const ignored = demoTranscript.filter(t => t.turnTakingSignal?.decision === "ignore");
+
+    expect(ignored.length).toBeGreaterThan(0);
+    expect(ignored.every(t => t.turnTakingSignal?.agentYieldMs === 0)).toBe(true);
+    expect(ignored.every(t => t.turnTakingSignal?.callerUtterancePreserved === null)).toBe(true);
+    expect(ignored.map(t => t.turnTakingSignal?.triggerSource)).toEqual(
+      expect.arrayContaining(["background_noise", "short_backchannel"])
+    );
+  });
+
+  it("yields only for caller speech, and every yield preserves the utterance", () => {
+    const yields = demoTranscript.filter(t => t.turnTakingSignal?.decision === "yield");
+
+    expect(yields.length).toBeGreaterThan(0);
+    expect(yields.every(t => t.turnTakingSignal?.triggerSource === "caller_speech")).toBe(true);
+    expect(yields.every(t => (t.turnTakingSignal?.agentYieldMs ?? 0) > 0)).toBe(true);
+    expect(yields.every(t => t.turnTakingSignal?.callerUtterancePreserved === true)).toBe(true);
+  });
+
+  it("keeps the escalation explanation intact when noise is dismissed", () => {
+    const t7 = demoTranscript.find(t => t.id === "t7");
+
+    expect(t7?.turnTakingSignal?.event).toBe("false_barge_in");
+    expect(t7?.turnTakingSignal?.decision).toBe("ignore");
+    expect(t7?.text).toContain("escalate this to our billing specialist team");
+  });
+});
+
 describe("first-contact resolution (containment ≠ resolution)", () => {
   it("marks the active call as not resolved on first contact because it escalated", () => {
     expect(demoActiveCall.resolvedOnFirstContact).toBe(false);

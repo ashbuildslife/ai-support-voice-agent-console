@@ -98,13 +98,22 @@ export default function Home() {
            ⏱ +{turn.silenceBeforeSeconds}s
          </span>
        )}
-       {turn.turnTakingSignal && (
+       {turn.turnTakingSignal?.event === "caller_barge_in" && (
          <span
            className="rounded-md bg-sky-100 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700"
            aria-label={`Caller barge-in handled; agent yielded in ${turn.turnTakingSignal.agentYieldMs} milliseconds`}
            title="Caller interruption was preserved without talking over them"
          >
            ↪ Barge-in · yielded {turn.turnTakingSignal.agentYieldMs}ms
+         </span>
+       )}
+       {turn.turnTakingSignal?.event === "false_barge_in" && (
+         <span
+           className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600"
+           aria-label={`False barge-in dismissed; agent kept speaking instead of stopping for ${turn.turnTakingSignal.triggerSource === "background_noise" ? "background noise" : "a short backchannel"}`}
+           title="Noise or a backchannel tripped the detector; the agent correctly ignored it"
+         >
+           ✕ {turn.turnTakingSignal.triggerSource === "background_noise" ? "Noise dismissed" : "Backchannel dismissed"} · kept speaking
          </span>
        )}
      </div>
