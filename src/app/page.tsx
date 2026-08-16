@@ -194,6 +194,24 @@ export default function Home() {
                     </ul>
                   </div>
                   <div
+                    className="mt-3 rounded-lg border border-rose-100 bg-rose-50 p-3 text-xs leading-5 text-rose-950"
+                    role="status"
+                    aria-label="Vulnerable-customer care review requires specialist handling"
+                  >
+                    <p className="font-bold text-slate-950">Vulnerable-customer care review</p>
+                    <ul className="mt-1 list-disc pl-4">
+                      {e.handoffSummary.vulnerabilityReview.signals.map(signal => (
+                        <li key={signal.kind}>
+                          <strong>{signal.kind.replaceAll("_", " ")}:</strong> {signal.evidence}
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="mt-2"><strong>Status:</strong> {e.handoffSummary.vulnerabilityReview.status.replaceAll("_", " ")} · automated resolution blocked.</p>
+                    <ul className="mt-1 list-disc pl-4">
+                      {e.handoffSummary.vulnerabilityReview.careGuidance.map(item => <li key={item}>{item}</li>)}
+                    </ul>
+                  </div>
+                  <div
                     className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-xs leading-5 text-red-950"
                     role="status"
                     aria-label="Sensitive-action authorization requires step-up verification"

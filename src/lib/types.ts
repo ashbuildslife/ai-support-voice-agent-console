@@ -19,6 +19,8 @@ export type SensitiveTranscriptRedactionStatus = "redacted_before_model";
 export type RecordingConsentStatus = "granted" | "declined";
 export type RecordingConsentEnforcement = "record_and_transcribe" | "disable_recording_and_transcription";
 export type SpokenCommitmentStatus = "open" | "superseded" | "fulfilled";
+export type VulnerabilitySignalKind = "repeat_contact" | "financial_urgency" | "anger_spike";
+export type VulnerableCustomerCareStatus = "requires_specialist_care";
 
 export interface SentimentTimelineEntry {
   turnNumber: number; sentiment: Sentiment; confidence: number;
@@ -132,6 +134,21 @@ export interface SpecialistOpeningBrief {
   noRepeatGuardrails: NoRepeatGuardrail[];
 }
 
+export interface VulnerabilitySignal {
+  kind: VulnerabilitySignalKind;
+  /** Direct transcript quote that raised the signal — evidence anchor, not an inferred label */
+  evidence: string;
+  detectedAtTurnId: string;
+}
+
+export interface VulnerableCustomerReview {
+  signals: VulnerabilitySignal[];
+  status: VulnerableCustomerCareStatus;
+  /** Specialist guardrails so vulnerable callers are not read a generic script */
+  careGuidance: string[];
+  automatedResolutionBlocked: boolean;
+}
+
 export interface SpokenCommitment {
   id: string;
   /** Transcript turn where the AI made the promise — every commitment is source-anchored */
@@ -206,6 +223,8 @@ export interface EscalationHandoffSummary {
   customerTransferNotice: CustomerTransferNotice;
   /** Agent-assist pre-brief the specialist sees before greeting the caller */
   specialistOpeningBrief: SpecialistOpeningBrief;
+  /** Vulnerability review travelling with the handoff so specialist care starts at connect */
+  vulnerabilityReview: VulnerableCustomerReview;
   /** Source-anchored register of promises the AI made during the call, so superseded refunds cannot be fulfilled twice */
   spokenCommitments: SpokenCommitment[];
   /** Authorization gate that prevents account context alone from approving a sensitive action */

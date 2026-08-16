@@ -112,6 +112,20 @@ export const demoEscalationEvents: EscalationEvent[] = [
           { capturedDetail: "Prior support contact", reuseInstruction: "Reference call_2801 and REF-2847-JM; do not miss the repeat-contact acknowledgement before asking new questions." }
         ]
       },
+      vulnerabilityReview: {
+        signals: [
+          { kind: "repeat_contact", evidence: 'Turn 4 caller: "I already talked to someone last week and they said it would be handled."', detectedAtTurnId: "t4" },
+          { kind: "financial_urgency", evidence: 'Turn 6 caller: "I need this money now."', detectedAtTurnId: "t6" },
+          { kind: "anger_spike", evidence: 'Turn 6 caller: "This is completely unacceptable."', detectedAtTurnId: "t6" }
+        ],
+        status: "requires_specialist_care",
+        careGuidance: [
+          "Open from the no-repeat guardrails so James does not have to restate his financial situation.",
+          "Lead with the KB-203 expedited reversal path; do not replay the standard 5–7 day refund timeline.",
+          "Confirm a concrete deposit timeline and next step before ending the call."
+        ],
+        automatedResolutionBlocked: true
+      },
       spokenCommitments: [
         {
           id: "cmt_t5_standard_refund",

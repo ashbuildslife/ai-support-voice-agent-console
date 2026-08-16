@@ -315,6 +315,38 @@ describe("spoken commitment evidence anchors", () => {
   });
 });
 
+describe("vulnerable-customer care review", () => {
+  const review = demoEscalationEvents[0].handoffSummary.vulnerabilityReview;
+
+  it("anchors every vulnerability signal to a real transcript turn and quote", () => {
+    const turnIds = demoTranscript.map(turn => turn.id);
+
+    expect(review.signals.length).toBeGreaterThanOrEqual(2);
+    expect(review.signals.every(signal => turnIds.includes(signal.detectedAtTurnId))).toBe(true);
+    expect(review.signals.every(signal => signal.evidence.includes("Turn"))).toBe(true);
+  });
+
+  it("detects repeat contact and financial urgency before the transfer", () => {
+    const kinds = review.signals.map(signal => signal.kind);
+
+    expect(kinds).toEqual(expect.arrayContaining(["repeat_contact", "financial_urgency"]));
+    expect(review.signals.some(signal => signal.evidence.includes("I need this money now"))).toBe(true);
+  });
+
+  it("requires specialist care and blocks automated resolution", () => {
+    expect(review.status).toBe("requires_specialist_care");
+    expect(review.automatedResolutionBlocked).toBe(true);
+  });
+
+  it("gives the specialist vulnerability-aware guardrails instead of a generic script", () => {
+    const guidance = review.careGuidance.join(" ").toLowerCase();
+
+    expect(guidance).toContain("do not replay");
+    expect(guidance).toContain("kb-203");
+    expect(guidance).toContain("timeline");
+  });
+});
+
 describe("metrics", () => {
   it("total matches sum of outcomes", () => {
     expect(demoMetrics.resolvedCount + demoMetrics.escalatedCount).toBeLessThanOrEqual(demoMetrics.totalCalls);
