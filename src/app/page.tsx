@@ -241,6 +241,17 @@ export default function Home() {
                         <p>Response: {e.handoffSummary.highValueActionGate.callerAuthenticationBoundary.syntheticSpeechRiskAssessment.requiredResponse.replaceAll("_", " ")}.</p>
                       </div>
                     </div>
+                    <div className="mt-2 rounded-md border border-red-200 bg-white/80 p-2">
+                      <p className="font-semibold">Voice prompt injection screen · {e.handoffSummary.highValueActionGate.voicePromptInjectionScreening.status.replaceAll("_", " ")}</p>
+                      {e.handoffSummary.highValueActionGate.voicePromptInjectionScreening.detectedPhrases.length > 0 ? (
+                        <>
+                          <p>Detected at turn {e.handoffSummary.highValueActionGate.voicePromptInjectionScreening.detectedAtTurnId}: {e.handoffSummary.highValueActionGate.voicePromptInjectionScreening.detectedPhrases.join("; ")}.</p>
+                          <p>Quarantined before any tool action. The refund stays blocked until security review clears the finding.</p>
+                        </>
+                      ) : (
+                        <p>No injected spoken instructions detected.</p>
+                      )}
+                    </div>
                     <div className="mt-2 rounded-md border border-red-200 bg-white/70 p-2">
                       <p className="font-semibold">Payment-data boundary · {e.handoffSummary.highValueActionGate.paymentDataIsolation.captureChannel.replaceAll("_", " ")}</p>
                       <p>Model, transcript, and call recording access: blocked before capture.</p>

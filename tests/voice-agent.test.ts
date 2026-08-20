@@ -347,6 +347,41 @@ describe("vulnerable-customer care review", () => {
   });
 });
 
+describe("voice prompt injection screening", () => {
+  const gate = demoEscalationEvents[0].handoffSummary.highValueActionGate;
+  const screening = gate.voicePromptInjectionScreening;
+
+  it("detects injected spoken instructions and anchors them to the caller's turn", () => {
+    const t8 = demoTranscript.find(turn => turn.id === "t8");
+
+    expect(screening.status).toBe("suspected");
+    expect(screening.detectedAtTurnId).toBe("t8");
+    expect(screening.detectedPhrases.length).toBeGreaterThan(0);
+    expect(screening.detectedPhrases.every(phrase => t8?.text.toLowerCase().includes(phrase.toLowerCase()))).toBe(true);
+  });
+
+  it("quarantines the injected instruction before any tool action executes", () => {
+    expect(screening.quarantinedBeforeToolAction).toBe(true);
+    expect(screening.actionTaken).toBe("quarantine_for_review");
+    expect(gate.automatedActionBlocked).toBe(true);
+    expect(gate.status).toBe("step_up_required");
+  });
+
+  it("keeps the refund blocked until a human security review clears the finding", () => {
+    const checks = gate.requiredNextChecks.join(" ").toLowerCase();
+
+    expect(screening.reviewRequiredBeforeResume).toBe(true);
+    expect(checks).toContain("prompt injection");
+  });
+
+  it("has the AI refuse the spoken instruction inside the transcript", () => {
+    const t9 = demoTranscript.find(turn => turn.id === "t9");
+
+    expect(t9?.speaker).toBe("ai");
+    expect(t9?.text.toLowerCase()).toContain("can't act on spoken instructions");
+  });
+});
+
 describe("metrics", () => {
   it("total matches sum of outcomes", () => {
     expect(demoMetrics.resolvedCount + demoMetrics.escalatedCount).toBeLessThanOrEqual(demoMetrics.totalCalls);

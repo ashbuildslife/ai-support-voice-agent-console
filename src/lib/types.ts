@@ -21,6 +21,8 @@ export type RecordingConsentEnforcement = "record_and_transcribe" | "disable_rec
 export type SpokenCommitmentStatus = "open" | "superseded" | "fulfilled";
 export type VulnerabilitySignalKind = "repeat_contact" | "financial_urgency" | "anger_spike";
 export type VulnerableCustomerCareStatus = "requires_specialist_care";
+export type VoicePromptInjectionStatus = "none_detected" | "suspected";
+export type InjectionQuarantineAction = "continue" | "quarantine_for_review";
 
 export interface SentimentTimelineEntry {
   turnNumber: number; sentiment: Sentiment; confidence: number;
@@ -182,6 +184,19 @@ export interface SyntheticSpeechRiskAssessment {
   requiredResponse: SyntheticSpeechRiskResponse;
 }
 
+export interface VoicePromptInjectionScreening {
+  status: VoicePromptInjectionStatus;
+  /** Direct transcript quotes that tripped the screener — evidence anchors, not inferred labels */
+  detectedPhrases: string[];
+  /** Null when no injected spoken instruction was detected */
+  detectedAtTurnId: string | null;
+  /** Spoken instructions are quarantined before any tool action can execute */
+  quarantinedBeforeToolAction: boolean;
+  actionTaken: InjectionQuarantineAction;
+  /** The high-value action stays blocked until a human security review clears the finding */
+  reviewRequiredBeforeResume: boolean;
+}
+
 export interface CallerAuthenticationBoundary {
   /** Voice biometric comparison is not accepted as an authentication factor */
   voiceBiometricAccepted: false;
@@ -206,6 +221,8 @@ export interface HighValueActionGate {
   callerAuthenticationBoundary: CallerAuthenticationBoundary;
   /** Pre-model boundary for any payment data requested during specialist review */
   paymentDataIsolation: PaymentDataIsolation;
+  /** Spoken caller instructions are screened for prompt injection before any tool action executes */
+  voicePromptInjectionScreening: VoicePromptInjectionScreening;
 }
 
 export interface EscalationHandoffSummary {
