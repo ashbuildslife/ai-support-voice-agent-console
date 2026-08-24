@@ -1,4 +1,11 @@
-import type { CallQualityReview, EscalationEvent, FrustrationAlert, GroundedAnswer, KBArticle, RubricScore, SentimentTimelineEntry, SupervisorMetrics, SupportCall, TranscriptTurn, VoiceAgentSnapshot } from "./types";
+import type { CallQualityReview, EscalationEvent, FrustrationAlert, GroundedAnswer, HandoffLoopGuard, HandoffLoopStatus, KBArticle, RubricScore, SentimentTimelineEntry, SupervisorMetrics, SupportCall, TranscriptTurn, VoiceAgentSnapshot } from "./types";
+
+export function getHandoffLoopStatus(guard: HandoffLoopGuard): HandoffLoopStatus {
+  const repeatedDestination = guard.priorHandoffDestinations.includes(guard.currentDestination);
+  const hopBudgetExhausted = guard.priorHandoffDestinations.length >= guard.maxAutomatedHandoffs;
+
+  return repeatedDestination || hopBudgetExhausted ? "human_escalation_required" : "clear";
+}
 
 export const demoSentimentTimeline: SentimentTimelineEntry[] = [
   { turnNumber: 1, sentiment: "calm", confidence: 0.97 },
@@ -88,6 +95,12 @@ export const demoEscalationEvents: EscalationEvent[] = [
         status: "acknowledged",
         acknowledgementRequired: true,
         fallbackIfNotAcknowledged: "Hold the live transfer and offer James a context-preserving callback so the specialist receives the same issue packet before reconnecting."
+      },
+      handoffLoopGuard: {
+        priorHandoffDestinations: ["Ava — Intake Assistant"],
+        currentDestination: "Maria — Billing Specialist Team",
+        maxAutomatedHandoffs: 2,
+        fallbackAction: "If a destination repeats or the hop budget is exhausted, stop automated rerouting and escalate to a human supervisor before another tool action."
       },
       customerTransferNotice: {
         spokenDisclosure: "James, I am sending Maria your verified email, prior call_2801, refund amount, KB-203 exception, and REF-2847-JM so you should not need to repeat them.",

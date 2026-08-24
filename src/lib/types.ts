@@ -8,6 +8,7 @@ export type RubricCategory = "clarity" | "accuracy" | "empathy" | "efficiency";
 export type TurnTakingEvent = "caller_barge_in" | "false_barge_in" | "agent_interruption";
 export type TurnTakingDecision = "yield" | "ignore";
 export type TurnTakingTriggerSource = "caller_speech" | "background_noise" | "short_backchannel";
+export type HandoffLoopStatus = "clear" | "human_escalation_required";
 export type SensitiveActionGateStatus = "allowed" | "step_up_required" | "blocked";
 export type PaymentCaptureChannel = "secure_dtmf" | "hosted_payment_link";
 export type IndependentCallerFactor = "authenticated_app_challenge" | "security_key";
@@ -114,6 +115,17 @@ export interface HandoffDeliveryAudit {
   status: HandoffDeliveryStatus;
   acknowledgementRequired: boolean;
   fallbackIfNotAcknowledged: string;
+}
+
+export interface HandoffLoopGuard {
+  /** Destinations already visited in this automated support journey */
+  priorHandoffDestinations: string[];
+  /** Destination the current handoff is attempting to reach */
+  currentDestination: string;
+  /** Stop automated routing before repeated transfers become a customer-facing loop */
+  maxAutomatedHandoffs: number;
+  /** Human-safe fallback when a route repeats or the hop budget is exhausted */
+  fallbackAction: string;
 }
 
 export interface CustomerTransferNotice {
@@ -236,6 +248,8 @@ export interface EscalationHandoffSummary {
   readinessChecklist: HandoffReadinessItem[];
   /** Delivery audit proving the packet reached the specialist desktop before live connection */
   deliveryAudit: HandoffDeliveryAudit;
+  /** Loop guard prevents the next agent from routing the caller back through an already visited path */
+  handoffLoopGuard: HandoffLoopGuard;
   /** Caller-facing receipt of what context will move with the transfer */
   customerTransferNotice: CustomerTransferNotice;
   /** Agent-assist pre-brief the specialist sees before greeting the caller */

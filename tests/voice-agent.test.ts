@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { demoActiveCall, demoTranscript, demoFrustrationAlerts, demoMetrics, demoQualityReview, demoEscalationEvents } from "@/lib/demo-data";
+import { demoActiveCall, demoTranscript, demoFrustrationAlerts, demoMetrics, demoQualityReview, demoEscalationEvents, getHandoffLoopStatus } from "@/lib/demo-data";
 
 describe("transcript", () => {
   it("has 9 turns", () => expect(demoTranscript).toHaveLength(9));
@@ -520,5 +520,34 @@ describe("first-contact resolution (containment ≠ resolution)", () => {
     expect(typeof demoMetrics.repeatContactCount).toBe("number");
     expect(demoMetrics.repeatContactCount).toBeGreaterThan(0);
     expect(demoMetrics.repeatContactCount).toBeLessThan(demoMetrics.totalCalls);
+  });
+});
+
+describe("handoff loop protection", () => {
+  const guard = demoEscalationEvents[0].handoffSummary.handoffLoopGuard;
+
+  it("keeps a first specialist route clear when the destination has not been visited", () => {
+    expect(guard.priorHandoffDestinations).not.toContain(guard.currentDestination);
+    expect(getHandoffLoopStatus(guard)).toBe("clear");
+  });
+
+  it("escalates immediately when a handoff would return to a visited destination", () => {
+    const repeatedRoute = {
+      ...guard,
+      priorHandoffDestinations: [guard.currentDestination]
+    };
+
+    expect(getHandoffLoopStatus(repeatedRoute)).toBe("human_escalation_required");
+    expect(repeatedRoute.fallbackAction.toLowerCase()).toContain("human supervisor");
+  });
+
+  it("escalates after the automated hop budget even when the next destination is new", () => {
+    const exhaustedBudget = {
+      ...guard,
+      priorHandoffDestinations: ["Intake Agent", "Billing Specialist"],
+      currentDestination: "Account Specialist"
+    };
+
+    expect(getHandoffLoopStatus(exhaustedBudget)).toBe("human_escalation_required");
   });
 });

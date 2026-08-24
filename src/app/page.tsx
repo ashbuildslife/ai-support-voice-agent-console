@@ -1,4 +1,4 @@
-import { demoActiveCall, demoEscalationEvents, demoFrustrationAlerts, demoGroundedAnswers, demoKBArticles, demoMetrics, demoQualityReview, demoTranscript } from "@/lib/demo-data";
+import { demoActiveCall, demoEscalationEvents, demoFrustrationAlerts, demoGroundedAnswers, demoKBArticles, demoMetrics, demoQualityReview, demoTranscript, getHandoffLoopStatus } from "@/lib/demo-data";
 import type { EscalationAction, IntentCategory, Sentiment } from "@/lib/types";
 
 function Badge({ children, tone = "slate" }: { children: React.ReactNode; tone?: string }) {
@@ -280,6 +280,16 @@ export default function Home() {
                     <p className="mt-1"><strong>Destination:</strong> {e.handoffSummary.deliveryAudit.destination}</p>
                     <p><strong>Pre-connect delivery:</strong> Sent {e.handoffSummary.deliveryAudit.sentBeforeTransferSeconds}s before transfer · {e.handoffSummary.deliveryAudit.status}</p>
                     <p><strong>Fallback:</strong> {e.handoffSummary.deliveryAudit.fallbackIfNotAcknowledged}</p>
+                  </div>
+                  <div
+                    className="mt-3 rounded-lg border border-orange-100 bg-orange-50 p-3 text-xs leading-5 text-orange-950"
+                    role="status"
+                    aria-label="Automated handoff loop guard"
+                  >
+                    <p className="font-bold text-slate-950">Handoff loop guard</p>
+                    <p className="mt-1"><strong>Route history:</strong> {[...e.handoffSummary.handoffLoopGuard.priorHandoffDestinations, e.handoffSummary.handoffLoopGuard.currentDestination].join(" → ")}</p>
+                    <p><strong>Status:</strong> {getHandoffLoopStatus(e.handoffSummary.handoffLoopGuard).replaceAll("_", " ")}</p>
+                    <p><strong>Fallback:</strong> {e.handoffSummary.handoffLoopGuard.fallbackAction}</p>
                   </div>
                   <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 p-3 text-xs leading-5 text-indigo-950">
                     <p className="font-bold text-slate-950">Caller transfer receipt</p>
