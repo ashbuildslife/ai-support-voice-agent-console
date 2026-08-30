@@ -24,6 +24,8 @@ export type VulnerabilitySignalKind = "repeat_contact" | "financial_urgency" | "
 export type VulnerableCustomerCareStatus = "requires_specialist_care";
 export type VoicePromptInjectionStatus = "none_detected" | "suspected";
 export type InjectionQuarantineAction = "continue" | "quarantine_for_review";
+export type TranscriptSourceTrustKind = "agent_response" | "caller_request" | "caller_instruction_attempt" | "background_audio";
+export type TranscriptSourceTrustDisposition = "context_only" | "quarantined";
 
 export interface SentimentTimelineEntry {
   turnNumber: number; sentiment: Sentiment; confidence: number;
@@ -73,9 +75,18 @@ export interface SupportCall {
   recordingConsent: RecordingConsentDecision;
 }
 
+export interface TranscriptSourceTrustLabel {
+  kind: TranscriptSourceTrustKind;
+  disposition: TranscriptSourceTrustDisposition;
+  /** Evidence for the source classification so a quarantined instruction cannot look like a caller request */
+  evidence: string;
+}
+
 export interface TranscriptTurn {
   id: string; callId: string; speaker: "ai" | "caller"; text: string;
   timestamp: string; intent?: IntentCategory; confidence?: number;
+  /** Per-turn provenance keeps caller context distinct from instructions quarantined as prompt injection */
+  sourceTrust: TranscriptSourceTrustLabel;
   /** Sensitive caller data is replaced before model context, transcript storage, and recording retention */
   sensitiveDataRedaction?: SensitiveTranscriptRedaction;
   /** Seconds of silence before this turn began — the #1 latency pain point in voice AI */

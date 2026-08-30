@@ -28,6 +28,27 @@ describe("transcript", () => {
   });
 });
 
+describe('transcript source trust', () => {
+  it('labels caller issue details as context rather than authorization', () => {
+    const request = demoTranscript.find(turn => turn.id === 't2');
+
+    expect(request?.sourceTrust?.kind).toBe('caller_request');
+    expect(request?.sourceTrust?.disposition).toBe('context_only');
+  });
+
+  it('keeps an injected caller instruction distinct and quarantined', () => {
+    const injection = demoTranscript.find(turn => turn.id === 't8');
+
+    expect(injection?.sourceTrust?.kind).toBe('caller_instruction_attempt');
+    expect(injection?.sourceTrust?.disposition).toBe('quarantined');
+    expect(injection?.sourceTrust?.evidence).toContain('t8');
+  });
+
+  it('labels every transcript turn with source-trust evidence', () => {
+    expect(demoTranscript.every(turn => (turn.sourceTrust?.evidence.length ?? 0) > 0)).toBe(true);
+  });
+});
+
 describe("recording consent continuity", () => {
   it("captures caller consent at the opening turn before later transcript content", () => {
     const consent = demoActiveCall.recordingConsent;

@@ -1,5 +1,5 @@
 import { demoActiveCall, demoEscalationEvents, demoFrustrationAlerts, demoGroundedAnswers, demoKBArticles, demoMetrics, demoQualityReview, demoTranscript, getHandoffLoopStatus } from "@/lib/demo-data";
-import type { EscalationAction, IntentCategory, Sentiment } from "@/lib/types";
+import type { EscalationAction, IntentCategory, Sentiment, TranscriptSourceTrustKind, TranscriptSourceTrustLabel } from "@/lib/types";
 
 function Badge({ children, tone = "slate" }: { children: React.ReactNode; tone?: string }) {
   const t: Record<string, string> = { slate: "border-slate-200 bg-white text-slate-700", green: "border-emerald-200 bg-emerald-50 text-emerald-700", red: "border-red-200 bg-red-50 text-red-700", amber: "border-amber-200 bg-amber-50 text-amber-800", purple: "border-indigo-200 bg-indigo-50 text-indigo-700" };
@@ -18,6 +18,29 @@ function SentimentBadge({ sentiment }: { sentiment: Sentiment }) {
 function IntentBadge({ intent }: { intent: IntentCategory }) {
   const m: Record<IntentCategory, string> = { billing: "purple", technical: "indigo", account: "slate", cancellation: "red", general: "slate" };
   return <Badge tone={m[intent]}>{intent}</Badge>;
+}
+
+const sourceTrustLabels: Record<TranscriptSourceTrustKind, string> = {
+  agent_response: 'AI output',
+  caller_request: 'Caller context',
+  caller_instruction_attempt: 'Caller instruction attempt',
+  background_audio: 'Background audio'
+};
+
+function SourceTrustBadge({ trust }: { trust: TranscriptSourceTrustLabel }) {
+  const quarantined = trust.disposition === 'quarantined';
+  const dispositionLabel = trust.disposition.replaceAll('_', ' ');
+
+  return (
+    <span
+      className={`rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${quarantined ? 'bg-red-100 text-red-800' : 'bg-slate-100 text-slate-600'}`}
+      role='status'
+      aria-label={`Source trust: ${sourceTrustLabels[trust.kind]}, ${dispositionLabel}`}
+      title={trust.evidence}
+    >
+      {sourceTrustLabels[trust.kind]} · {dispositionLabel}
+    </span>
+  );
 }
 
 const escalationActionLabels: Record<EscalationAction, string> = {
@@ -82,6 +105,7 @@ export default function Home() {
      </span>
      <div className="flex items-center gap-2">
        {turn.intent && <IntentBadge intent={turn.intent} />}
+       <SourceTrustBadge trust={turn.sourceTrust} />
        {turn.sensitiveDataRedaction && (
          <span
            className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800"
