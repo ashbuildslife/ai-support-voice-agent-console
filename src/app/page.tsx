@@ -1,5 +1,5 @@
-import { demoActiveCall, demoEscalationEvents, demoFrustrationAlerts, demoGroundedAnswers, demoKBArticles, demoMetrics, demoQualityReview, demoTranscript, getHandoffLoopStatus } from "@/lib/demo-data";
-import type { EscalationAction, IntentCategory, Sentiment, TranscriptSourceTrustKind, TranscriptSourceTrustLabel } from "@/lib/types";
+import { demoActiveCall, demoEscalationEvents, demoFrustrationAlerts, demoGroundedAnswers, demoKBArticles, demoMetrics, demoQualityReview, demoTranscript, getHandoffLoopStatus, getSilenceGapAssessment } from "@/lib/demo-data";
+import type { EscalationAction, IntentCategory, Sentiment, SilenceGapStatus, TranscriptSourceTrustKind, TranscriptSourceTrustLabel } from "@/lib/types";
 
 function Badge({ children, tone = "slate" }: { children: React.ReactNode; tone?: string }) {
   const t: Record<string, string> = { slate: "border-slate-200 bg-white text-slate-700", green: "border-emerald-200 bg-emerald-50 text-emerald-700", red: "border-red-200 bg-red-50 text-red-700", amber: "border-amber-200 bg-amber-50 text-amber-800", purple: "border-indigo-200 bg-indigo-50 text-indigo-700" };
@@ -39,6 +39,35 @@ function SourceTrustBadge({ trust }: { trust: TranscriptSourceTrustLabel }) {
       title={trust.evidence}
     >
       {sourceTrustLabels[trust.kind]} · {dispositionLabel}
+    </span>
+  );
+}
+
+const silenceGapLabels: Record<SilenceGapStatus, string> = {
+  within_turn_window: "Within turn window",
+  cover_phrase_recommended: "Cover phrase recommended",
+  dead_air_risk: "Dead-air risk"
+};
+
+const silenceGapBadgeStyles: Record<SilenceGapStatus, string> = {
+  within_turn_window: "bg-emerald-100 text-emerald-700",
+  cover_phrase_recommended: "bg-amber-100 text-amber-700",
+  dead_air_risk: "bg-red-100 text-red-800"
+};
+
+function SilenceGapBadge({ seconds }: { seconds: number }) {
+  const assessment = getSilenceGapAssessment(seconds);
+  const label = silenceGapLabels[assessment.status];
+  const action = assessment.recommendedAction.replaceAll("_", " ");
+
+  return (
+    <span
+      className={`rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${silenceGapBadgeStyles[assessment.status]}`}
+      role="status"
+      aria-label={`Silence gap ${seconds} seconds: ${label}. Recommended action: ${action}.`}
+      title={`Silence gap assessment: ${label}. Recommended action: ${action}.`}
+    >
+      {label}
     </span>
   );
 }
@@ -121,6 +150,9 @@ export default function Home() {
          <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700" title={`${turn.silenceBeforeSeconds}s silence before reply`}>
            ⏱ +{turn.silenceBeforeSeconds}s
          </span>
+       )}
+       {turn.silenceBeforeSeconds !== undefined && (
+         <SilenceGapBadge seconds={turn.silenceBeforeSeconds} />
        )}
        {turn.turnTakingSignal?.event === "caller_barge_in" && (
          <span

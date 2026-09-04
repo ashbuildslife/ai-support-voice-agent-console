@@ -1,10 +1,20 @@
-import type { CallQualityReview, EscalationEvent, FrustrationAlert, GroundedAnswer, HandoffLoopGuard, HandoffLoopStatus, KBArticle, RubricScore, SentimentTimelineEntry, SupervisorMetrics, SupportCall, TranscriptTurn, VoiceAgentSnapshot } from "./types";
+import type { CallQualityReview, EscalationEvent, FrustrationAlert, GroundedAnswer, HandoffLoopGuard, HandoffLoopStatus, KBArticle, RubricScore, SentimentTimelineEntry, SilenceGapAssessment, SupervisorMetrics, SupportCall, TranscriptTurn, VoiceAgentSnapshot } from "./types";
 
 export function getHandoffLoopStatus(guard: HandoffLoopGuard): HandoffLoopStatus {
   const repeatedDestination = guard.priorHandoffDestinations.includes(guard.currentDestination);
   const hopBudgetExhausted = guard.priorHandoffDestinations.length >= guard.maxAutomatedHandoffs;
 
   return repeatedDestination || hopBudgetExhausted ? "human_escalation_required" : "clear";
+}
+
+export function getSilenceGapAssessment(silenceBeforeSeconds: number): SilenceGapAssessment {
+  if (silenceBeforeSeconds >= 2) {
+    return { status: "dead_air_risk", recommendedAction: "callback_or_handoff" };
+  }
+  if (silenceBeforeSeconds >= 0.7) {
+    return { status: "cover_phrase_recommended", recommendedAction: "honest_progress_update" };
+  }
+  return { status: "within_turn_window", recommendedAction: "no_action" };
 }
 
 export const demoSentimentTimeline: SentimentTimelineEntry[] = [

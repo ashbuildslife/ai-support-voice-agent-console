@@ -26,6 +26,13 @@ export type VoicePromptInjectionStatus = "none_detected" | "suspected";
 export type InjectionQuarantineAction = "continue" | "quarantine_for_review";
 export type TranscriptSourceTrustKind = "agent_response" | "caller_request" | "caller_instruction_attempt" | "background_audio";
 export type TranscriptSourceTrustDisposition = "context_only" | "quarantined";
+export type SilenceGapStatus = "within_turn_window" | "cover_phrase_recommended" | "dead_air_risk";
+export type SilenceGapAction = "no_action" | "honest_progress_update" | "callback_or_handoff";
+
+export interface SilenceGapAssessment {
+  status: SilenceGapStatus;
+  recommendedAction: SilenceGapAction;
+}
 
 export interface SentimentTimelineEntry {
   turnNumber: number; sentiment: Sentiment; confidence: number;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { demoActiveCall, demoTranscript, demoFrustrationAlerts, demoMetrics, demoQualityReview, demoEscalationEvents, getHandoffLoopStatus } from "@/lib/demo-data";
+import { demoActiveCall, demoTranscript, demoFrustrationAlerts, demoMetrics, demoQualityReview, demoEscalationEvents, getHandoffLoopStatus, getSilenceGapAssessment } from "@/lib/demo-data";
 
 describe("transcript", () => {
   it("has 9 turns", () => expect(demoTranscript).toHaveLength(9));
@@ -477,6 +477,32 @@ describe("silence gaps (latency)", () => {
 
     expect(signal?.agentYieldMs).toBeLessThanOrEqual(250);
     expect(signal?.callerUtterancePreserved).toBe(true);
+  });
+});
+
+describe("silence gap handling", () => {
+  it("keeps sub-700ms gaps inside the turn-taking window", () => {
+    expect(getSilenceGapAssessment(0.6)).toEqual({
+      status: "within_turn_window",
+      recommendedAction: "no_action"
+    });
+  });
+
+  it("recommends an honest progress update before silence becomes dead air", () => {
+    expect(getSilenceGapAssessment(0.7)).toEqual({
+      status: "cover_phrase_recommended",
+      recommendedAction: "honest_progress_update"
+    });
+  });
+
+  it("routes a two-second gap toward callback or human handoff", () => {
+    const t7 = demoTranscript.find(t => t.id === "t7");
+
+    expect(t7?.silenceBeforeSeconds).toBeGreaterThanOrEqual(2);
+    expect(getSilenceGapAssessment(t7!.silenceBeforeSeconds!)).toEqual({
+      status: "dead_air_risk",
+      recommendedAction: "callback_or_handoff"
+    });
   });
 });
 
